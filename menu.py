@@ -1,4 +1,5 @@
 import sys, time
+import game
 
 class tc:
     PURPLE = '\033[95m'
@@ -11,20 +12,10 @@ class tc:
     UNDERLINE = '\033[4m'
 
 def main():
-    #animation()
-    menu_options()
+    choice = menu_options()
     return
 
-def animation():
-    symbols = [':', ' ']
-    i = 0
-    while True:
-        sys.stdout.write(symbols[i])
-        sys.stdout.write("\b")
-        sys.stdout.flush()
-        time.sleep(0.2)
-        if i == 0: i += 1
-        else: i = 0
+
 
 def menu_options():
     while True:
@@ -33,7 +24,8 @@ def menu_options():
         choice = input("Please make your " + color("G", "choice: "))
 
         if choice == "S" or choice == "s":
-            print("Launch game platform here")
+            game.vs_AI()
+            continue
 
         elif choice == "V" or choice == "v":
             while True:
@@ -41,7 +33,8 @@ def menu_options():
                 choice = input("Please make your " + color("G", "choice: "))
 
                 if choice == "L" or choice == "l":
-                    print("Launch game platform here")
+                    game.vs_player()
+                    break
 
                 elif choice == "O" or choice == "o":
                     print("Find remote game platform here")
@@ -57,7 +50,8 @@ def menu_options():
                 choice = input("Please make your " + color("G", "choice: "))
 
                 if choice == "L" or choice == "l":
-                    print("Launch game platform here")
+                    local_tour_play()
+                    break
 
                 elif choice == "O" or choice == "o":
                     print("Find remote game platform here")
@@ -70,6 +64,40 @@ def menu_options():
         else: print("Invalid choice, try again")
 
     return
+
+def local_tour_play():
+    players = []
+
+    make_header("Tournament play!")
+    while True:
+        choice = input("How many players? [" + color("G", "3-8") + "] ")
+        if type(int(choice)) == int:
+            choice = int(choice)
+            if choice > 2 and choice < 9:
+                break
+
+    print("Name your players!")
+    #for i in range(choice):
+    #    name = input("Player nr " + str(i) + ": ")
+    #    players.append(name)
+
+    # Shortcut for testing
+    players = ['ErikO', 'Daniel', 'Nicole', 'ErikL', 'Davide', 'Sam', 'Kevin', 'Viktor']
+    for i in range(8-choice):
+        del players[-1]
+
+    # Hur jag tänkt, ungefär, att det kan funka:
+    # import tournament
+    # tour = tournament.create_tournament(players)
+    nr_games = 6 # or tour.nr_games
+    for i in range(nr_games):
+        # tour.show_tournament_board()
+        # game = tour.get_next_game()
+        # (player_1, player_2) = tour.get_players(game)
+        winner = game.vs_player("player_1", "player_2")
+        # tour.post_result(game, winner)
+
+    make_header("Winner is: Player_1!")
 
 def make_header(title):
     header = ""
@@ -109,6 +137,16 @@ def color(color, text):
     else:
         return text
 
+def animation():
+    symbols = [':', ' ']
+    i = 0
+    while True:
+        sys.stdout.write(symbols[i])
+        sys.stdout.write("\b")
+        sys.stdout.flush()
+        time.sleep(0.2)
+        if i == 0: i += 1
+        else: i = 0
 
 if __name__ == '__main__':
     main()
