@@ -1,5 +1,9 @@
-import sys, time
+import sys
+import time as t
+from threading import Thread
 import game
+import server
+import client
 
 class tc:
     PURPLE = '\033[95m'
@@ -14,8 +18,6 @@ class tc:
 def main():
     choice = menu_options()
     return
-
-
 
 def menu_options():
     while True:
@@ -33,11 +35,12 @@ def menu_options():
                 choice = input("Please make your " + color("G", "choice: "))
 
                 if choice == "L" or choice == "l":
-                    game.vs_player()
+                    game.local_vs()
                     break
 
                 elif choice == "O" or choice == "o":
-                    print("Find remote game platform here")
+                    online_vs()
+                    break
 
                 elif choice == "R" or choice == "r":
                     break
@@ -94,10 +97,46 @@ def local_tour_play():
         # tour.show_tournament_board()
         # game = tour.get_next_game()
         # (player_1, player_2) = tour.get_players(game)
-        winner = game.vs_player("player_1", "player_2")
+        winner = game.local_vs("player_1", "player_2")
         # tour.post_result(game, winner)
 
     make_header("Winner is: Player_1!")
+
+def online_vs():
+    while True:
+        choice = input("Do you wish to act as server? [" + color("G", "Y") + "]es [" + color("R", "N") + "]no ")
+        if choice == "Y" or choice == "y":
+            server_thread = Thread(target=run_server)
+            server_thread.daemon = True
+            server_thread.start()
+
+            t.sleep(0.2) # client is sometimes quicker than server to start
+            client_thread = Thread(target=run_client)
+            client_thread.daemon = True
+            client_thread.start()
+            run_handler()
+            return
+        elif choice == "N" or choice == "n":
+            game.online_vs("p2", False)
+            return
+
+    return
+
+def run_server():
+    s = server.Server()
+    t.sleep(0.2)
+    s.relay_game()
+    #s.test_recieve()
+
+def run_client():
+    t.sleep(10) # Handler needs to connect first
+    game.online_vs("p1", True)
+
+def run_handler():
+    h = client.Client("HANDLER")
+    player_list = h.receive()
+    h.send(player_list)
+    while True: t.sleep(100)
 
 def make_header(title):
     header = ""

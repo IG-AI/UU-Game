@@ -7,28 +7,26 @@ import pickle
 class Client:
     NICK = ''
     HOST = '127.0.0.1'
-    PORT = 65001
+    PORT = 65000
     BUFSIZ = 4096
+    CONNECTION = None
 
-    def __init__(self):
+    def __init__(self, nick_name):
         try:
+            self.NICK = nick_name
             CONNECTION = self.connect_to_server()
-            t.sleep(3)
-            print("sending")
-            self.simulate(CONNECTION)
         except(KeyboardInterrupt, SystemExit):
             print("\nShutting down client")
 
     def connect_to_server(self):
         # AF_INET = IPv4, SOCK_STREAM = TCP Socket
-        CONNECTION = s.socket(s.AF_INET, s.SOCK_STREAM)
+        self.CONNECTION = s.socket(s.AF_INET, s.SOCK_STREAM)
         print("Connecting to server...")
-        CONNECTION.connect((self.HOST, self.PORT))
+        self.CONNECTION.connect((self.HOST, self.PORT))
         print("Connected to server")
 
-        self.NICK = input("Select your name: ")
-        CONNECTION.sendall(pickle.dumps(self.NICK))
-        return CONNECTION
+        if self.NICK != "HANDLER":
+            self.CONNECTION.sendall(pickle.dumps(self.NICK))
 
     def simulate(self, con):
         i = 0
@@ -39,10 +37,13 @@ class Client:
             print(i)
             i += 1
 
-    def send_message(self, message, con):
-        con.sendall(pickle.dumps(message))
-        t.sleep(3)
-        return
+    def send(self, data):
+        self.CONNECTION.sendall(pickle.dumps(data))
+
+    def receive(self):
+        data = self.CONNECTION.recv(self.BUFSIZ)
+        data = pickle.loads(data)
+        return data
 
 
 if __name__ == "__main__":

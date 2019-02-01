@@ -7,32 +7,36 @@ from threading import Thread
 
 class Server:
     HOST = ''
-    PORT = 65001
+    PORT = 65000
     BUFSIZ = 4096
+    HANDLER = None
+    # AF_INET = IPv4, SOCK_STREAM = TCP Socket
+    ACCEPT_SOCKET = s.socket(s.AF_INET, s.SOCK_STREAM)
 
     client_list = {}
 
     def __init__(self):
         try:
-            #ACCEPT_THREAD = Thread(target=self.accept_clients)
-            #ACCEPT_THREAD.daemon = True
-            #ACCEPT_THREAD.start()
-            #while True: t.sleep(100)
+            print("Booting server")
+            self.ACCEPT_SOCKET.bind((self.HOST, self.PORT))
+            self.ACCEPT_SOCKET.listen()
+            self.accept_handler()
             self.accept_clients()
         except (KeyboardInterrupt, SystemExit):
             print("\nShutting down server")
 
-    def accept_clients(self):
-        # AF_INET = IPv4, SOCK_STREAM = TCP Socket
-        ACCEPT_SOCKET = s.socket(s.AF_INET, s.SOCK_STREAM)
-        ACCEPT_SOCKET.bind((self.HOST, self.PORT))
-        ACCEPT_SOCKET.listen()
+    def accept_handler(self):
+        print("Waiting for handler to connect...")
+        self.HANDLER, _ = self.ACCEPT_SOCKET.accept()
+        print("Handler connected")
 
-        nr_connections = 0 # 
+
+    def accept_clients(self):
+        nr_connections = 0
         while nr_connections < 2:
             print("Waiting for incoming connections...")
             try:
-                client_socket, _ = ACCEPT_SOCKET.accept()
+                client_socket, _ = self.ACCEPT_SOCKET.accept()
                 print("client:", "connected")
                 nick = client_socket.recv(self.BUFSIZ)
                 nick = pickle.loads(nick)
@@ -41,16 +45,20 @@ class Server:
 
             except KeyboardInterrupt:
                 print("\nStopped incoming connections")
-                ACCEPT_SOCKET.close()
+                self.ACCEPT_SOCKET.close()
                 return
 
         print("All clients connected!")
+        data = pickle.dumps(list(self.client_list.keys()))
+        self.HANDLER.sendall(data)
 
-        # Clients must choose name "a" and "b" for the relay test to work
-        self.relay_game("a", "b")
 
-    def relay_game(self, player_1, player_2):
+    def relay_game(self):
         # Get the sockets
+        players = self.HANDLER.recv(self.BUFSIZ)
+        players = pickle.loads(players)
+        player_1 = players[1]
+        player_2 = players[0]
         player_1 = self.client_list[player_1]
         player_2 = self.client_list[player_2]
         while True:
