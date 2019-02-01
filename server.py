@@ -33,7 +33,7 @@ class Server:
             print("Waiting for incoming connections...")
             try:
                 client_socket, _ = ACCEPT_SOCKET.accept()
-                print("client:", client_address, "connected")
+                print("client:", "connected")
                 nick = client_socket.recv(self.BUFSIZ)
                 nick = pickle.loads(nick)
                 self.client_list[nick] = client_socket
