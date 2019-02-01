@@ -1,4 +1,3 @@
-# import client
 from random import random
 
 class Tournament:
