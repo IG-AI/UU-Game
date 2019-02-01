@@ -6,7 +6,7 @@ import pickle
 from threading import Thread
 
 class Server:
-    HOST = '127.0.0.1'
+    HOST = ''
     PORT = 65001
     BUFSIZ = 4096
 
