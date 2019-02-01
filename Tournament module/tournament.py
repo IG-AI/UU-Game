@@ -4,19 +4,22 @@ class Tournament:
     # Initialize the tournament class, with a list of players as input.
     # To get the opponents do as follows: tournament1 = Tournament(player_list), opponents = tournament1.opponent_list
     def __init__(self, player_list):
-        self.player_list = player_list
-        self.opponents_list = choose_players_list(self.player_list)
+        self.current_player_list = player_list # List with the current players in the tournament
+        self.start_player_list = player_list # List with all players
+        self.winner_list = [] # Lists in list with the wining players from each game iteration
+        self.opponents_list = choose_players_list(self.current_player_list) # List with the current opponents
 
     # Receives the winners in the form of a list from the client and updates the opponent_list with new opponents.
     # To get new opponents do as follows: tournament1.set_winner(winner_list), opponents = tournament1.opponent_list
-    def set_winner(self, winner_list):
-        self.player_list = self.player_list + winner_list
-        if len(self.player_list) <= 1:
+    def update_opponents(self, winner_list):
+        self.winner_list.append(winner_list)
+        self.current_player_list = self.current_player_list + winner_list
+        if len(self.current_player_list) <= 1:
             print('The winner is: ')
-            print("Player ", self.player_list[0])
+            print("Player ", self.current_player_list[0])
             print(' Congratulations!')
             return ()
-        self.opponents_list = choose_players_list(self.player_list)
+        self.opponents_list = choose_players_list(self.current_player_list)
 
 # Helps the class to select two opponents and then update the opponent_list in the class.
 def choose_two_players(player_list):
