@@ -2,12 +2,13 @@ from random import random
 
 class Tournament:
     # Initialize the tournament class, with a list of players as input.
-    # Example: tournament1 = Tournament(player_list), opponents = tournament1.opponent_list
+    # To get the opponents do as follows: tournament1 = Tournament(player_list), opponents = tournament1.opponent_list
     def __init__(self, player_list):
         self.player_list = player_list
         self.opponent_list = choose_players(self.player_list)
 
-    # Receives the winners in the form of a list from the client, selections new opponents and returns them to the client.
+    # Receives the winners in the form of a list from the client and updates the opponent_list with new opponents.
+    # To get new opponents do as follows: tournament1.set_winner(winner_list), opponents = tournament1.opponent_list
     def set_winner(self, winner_list):
         self.player_list = self.player_list + winner_list
         if len(self.player_list) <= 1:
