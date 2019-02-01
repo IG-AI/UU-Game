@@ -26,7 +26,7 @@ class Client:
         CONNECTION.connect((self.HOST, self.PORT))
         print("Connected to server")
 
-        self.NICK = raw_input("Select your name: ")
+        self.NICK = input("Select your name: ")
         CONNECTION.sendall(pickle.dumps(self.NICK))
         return CONNECTION
 
