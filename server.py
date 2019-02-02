@@ -57,7 +57,7 @@ class Server:
             # Relay messages between players. recv is blocking.
             data = player_1.recv(self.BUFSIZ)
             # Intercept data
-            # If data = win, send last game state to player2 and return winner to menu.py
+            # If data = win, send last game state to player2 and return winner to both players menu.py
             player_2.sendall(data)
             data = player_2.recv(self.BUFSIZ)
             player_1.sendall(data)
