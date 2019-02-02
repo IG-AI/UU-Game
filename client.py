@@ -7,7 +7,7 @@ import pickle
 class Client:
     NICK = ''
     HOST = '127.0.0.1'
-    PORT = 65000
+    PORT = 65001
     BUFSIZ = 4096
     CONNECTION = None
 
@@ -21,12 +21,11 @@ class Client:
     def connect_to_server(self):
         # AF_INET = IPv4, SOCK_STREAM = TCP Socket
         self.CONNECTION = s.socket(s.AF_INET, s.SOCK_STREAM)
-        print("Connecting to server...")
+        print(self.NICK, "connecting to server...")
         self.CONNECTION.connect((self.HOST, self.PORT))
-        print("Connected to server")
+        print(self.NICK, "Connected to server")
 
-        if self.NICK != "HANDLER":
-            self.CONNECTION.sendall(pickle.dumps(self.NICK))
+        self.CONNECTION.sendall(pickle.dumps(self.NICK))
 
     def simulate(self, con):
         i = 0

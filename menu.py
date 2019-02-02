@@ -16,7 +16,7 @@ class tc:
     UNDERLINE = '\033[4m'
 
 def main():
-    choice = menu_options()
+    menu_options()
     return
 
 def menu_options():
@@ -106,38 +106,28 @@ def online_vs():
     while True:
         choice = input("Do you wish to act as server? [" + color("G", "Y") + "]es [" + color("R", "N") + "]no ")
         if choice == "Y" or choice == "y":
-            server_thread = Thread(target=run_server)
-            server_thread.daemon = True
-            server_thread.start()
+            s = server.Server()
 
-            t.sleep(0.2) # client is sometimes quicker than server to start
-            client_thread = Thread(target=run_client)
-            client_thread.daemon = True
+            t.sleep(0.2)                              # client is sometimes quicker than server to start
+            client_thread = Thread(target=run_client) # Starts thread to run client simultaneously as server
+            client_thread.daemon = True               # Thread will not block if not properly shut down(E.g server crashes)
             client_thread.start()
-            run_handler()
+
+            s.accept_clients(2)
+            players = s.get_player_list()
+            s.relay_game(players)
             return
+
         elif choice == "N" or choice == "n":
-            game.online_vs("p2", False)
+            game.online_vs("p2")
             return
 
     return
 
-def run_server():
-    s = server.Server()
-    t.sleep(0.2)
-    s.relay_game()
-    #s.test_recieve()
-
 def run_client():
-    t.sleep(10) # Handler needs to connect first
-    game.online_vs("p1", True)
+    game.online_vs("p1")
 
-def run_handler():
-    h = client.Client("HANDLER")
-    player_list = h.receive()
-    h.send(player_list)
-    while True: t.sleep(100)
-
+# Only silly stuff below
 def make_header(title):
     header = ""
     width = 50

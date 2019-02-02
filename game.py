@@ -12,16 +12,20 @@ def local_vs(player_1, player_2):
         return player_1
     else: return player_2
 
-def online_vs(nick, starting_player):
+def online_vs(nick):
     c = client.Client(nick)
-    game_state = [0, 0]
+    tmp = c.receive()
+    print(nick, "initial receive:", tmp)
+    if tmp == "START":
+        game_state = [0, 0]
+        starting_player = True
+    else:
+        game_state = tmp
+        starting_player = False
     i = 0
     score = 0
-    if not starting_player:
-        print(nick, "initial receive:")
-        game_state = c.receive()
-        print(game_state)
-    while i < 20:
+
+    while i < 100:
         score += random.randrange(5)
 
         if starting_player: game_state[0] += score
@@ -34,4 +38,4 @@ def online_vs(nick, starting_player):
         t.sleep(0.1)
         score = 0
         i += 1
-
+        # if game_state[0/1] > win value, send win signal to server
