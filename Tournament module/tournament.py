@@ -1,4 +1,4 @@
-from random import random
+import random
 
 class Tournament:
     # Initialize the tournament class, with a list of players as input.
@@ -18,6 +18,7 @@ class Tournament:
             print('The winner is: ')
             print("Player ", self.current_player_list[0])
             print(' Congratulations!')
+            self.opponents_list = [self.current_player_list]
             return ()
         self.opponents_list = choose_players_list(self.current_player_list)
 
@@ -54,7 +55,5 @@ def choose_players_list(player_list):
         opponents_list.append(opponents)
         return opponents_list
 
-
-
-
-
+if __name__ == "__main__":
+    Tournament()
