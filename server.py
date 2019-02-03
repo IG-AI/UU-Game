@@ -7,7 +7,7 @@ from threading import Thread
 
 class Server:
     HOST = ''
-    PORT = 65001
+    PORT = 65005
     BUFSIZ = 4096
     HANDLER = None
     # AF_INET = IPv4, SOCK_STREAM = TCP Socket
@@ -47,20 +47,33 @@ class Server:
 
     def relay_game(self, players):
         # Get the sockets
-        print("Game Relay")
         player_1 = players[0]
         player_2 = players[1]
         player_1 = self.client_list[player_1]
         player_2 = self.client_list[player_2]
-        player_1.sendall(pickle.dumps("START"))
+        player_1.sendall(pickle.dumps("SYNC")) # Synchronize
+        player_2.sendall(pickle.dumps("SYNC"))
+        tmp = player_1.recv(self.BUFSIZ)        # Acknowledgement
+        tmp = player_2.recv(self.BUFSIZ)
+        player_1.sendall(pickle.dumps("FIRST")) # Start game
         while True:
-            # Relay messages between players. recv is blocking.
+            # Bounce game state between players
             data = player_1.recv(self.BUFSIZ)
-            # Intercept data
-            # If data = win, send last game state to player2 and return winner to both players menu.py
-            player_2.sendall(data)
+            data = pickle.loads(data)
+            if data[0] == "WIN":
+                player_2.sendall(pickle.dumps(data[1]))
+                return players[0]
+            player_2.sendall(pickle.dumps(data))
+
             data = player_2.recv(self.BUFSIZ)
-            player_1.sendall(data)
+            data = pickle.loads(data)
+            if data[0] == "WIN":
+                player_1.sendall(pickle.dumps(data[1]))
+                return players[1]
+            player_1.sendall(pickle.dumps(data))
+
+    def teardown(self):
+        self.ACCEPT_SOCKET.close()
 
 
 if __name__ == "__main__":

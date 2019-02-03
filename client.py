@@ -7,7 +7,7 @@ import pickle
 class Client:
     NICK = ''
     HOST = '127.0.0.1'
-    PORT = 65001
+    PORT = 65005
     BUFSIZ = 4096
     CONNECTION = None
 
@@ -27,15 +27,6 @@ class Client:
 
         self.CONNECTION.sendall(pickle.dumps(self.NICK))
 
-    def simulate(self, con):
-        i = 0
-        while True:
-            con.sendall(pickle.dumps(i)) # Send encoded integer
-            data = con.recv(self.BUFSIZ) # Receive endoded data
-            i = pickle.loads(data)       # Decode data
-            print(i)
-            i += 1
-
     def send(self, data):
         self.CONNECTION.sendall(pickle.dumps(data))
 
@@ -43,6 +34,9 @@ class Client:
         data = self.CONNECTION.recv(self.BUFSIZ)
         data = pickle.loads(data)
         return data
+
+    def teardown(self):
+        self.CONNECTION.close()
 
 
 if __name__ == "__main__":

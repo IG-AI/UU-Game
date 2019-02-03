@@ -3,20 +3,19 @@ import client
 import time as t
 
 def vs_AI():
-    print("A game against AI has been played!")
+    return "A game against AI has been played!"
 
 def local_vs(player_1, player_2):
     outcome = random.randrange(2)
-    print("A game between two players has been played! Player:", outcome, "won!")
     if outcome == 1:
-        return player_1
-    else: return player_2
+        return player_1 + " has won!"
+    else: return player_2 + " has won!"
 
-def online_vs(nick):
-    c = client.Client(nick)
+def online_vs(nick, c):
+    c.send("ACK")
     tmp = c.receive()
     print(nick, "initial receive:", tmp)
-    if tmp == "START":
+    if tmp == "FIRST":
         game_state = [0, 0]
         starting_player = True
     else:
@@ -24,12 +23,30 @@ def online_vs(nick):
         starting_player = False
     i = 0
     score = 0
+    win_limit = 20
 
     while i < 100:
-        score += random.randrange(5)
+        if game_state[0] > win_limit:
+            if not starting_player:
+                return "You've lost!"
 
+        if game_state[1] > win_limit:
+            if starting_player:
+                return "You've lost!"
+
+        score += random.randrange(5)
         if starting_player: game_state[0] += score
         else: game_state[1] += score
+
+        if game_state[0] > win_limit:
+            if starting_player:
+                c.send(["WIN", game_state])
+                return "You've won!"
+
+        if game_state[1] > win_limit:
+            if not starting_player:
+                c.send(["WIN", game_state])
+                return "You've won!"
 
         print(nick, "sent", game_state)
         c.send(game_state)
@@ -38,4 +55,4 @@ def online_vs(nick):
         t.sleep(0.1)
         score = 0
         i += 1
-        # if game_state[0/1] > win value, send win signal to server
+
