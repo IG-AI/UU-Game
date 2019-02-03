@@ -1,6 +1,5 @@
 import tournament as t
 import random
-import math
 
 def main():
     players = 9
