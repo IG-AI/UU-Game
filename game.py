@@ -3,51 +3,72 @@ import random
 import client
 import time as t
 
-def vs_AI():
-    return "A game against AI has been played!"
+def local_vs(player_1, player_2, humans):
+    if humans[0]:
+        tmp = "tmp" # Make player 1 NPC
+    elif humans[1]:
+        tmp = "tmp" # Make player 2 NPC
 
-def local_vs(player_1, player_2):
     outcome = random.randrange(2)
     if outcome == 1:
-        return player_1 + " has won!"
-    else: return player_2 + " has won!"
+        return player_1
+    else: return player_2
 
-def online_vs(nick, c):
-    c.send("ACK")
-    tmp = c.receive()
-    print(nick, "initial receive:", tmp)
-    if tmp == "FIRST":
-        game_state = [0, 0]
-        starting_player = True
+def online_vs(nick, c, human, server):
+    starting_player = None
+    if not human:
+        tmp = "tmp" # Make this player NPC
+
+    # Decide starting player
+    if server:
+        i = random.randint(0,1)
+        if i == 1:
+            starting_player = True
+            c.send("WAIT")
+        else:
+            starting_player = False
+            c.send("START")
     else:
-        game_state = tmp
-        starting_player = False
+        ack = c.receive()
+        if ack == "WAIT":
+            starting_player = False
+            game_state = c.receive()
+        else:
+            starting_player = False
+            game_state = [0, 0]
+
+    if server and starting_player:
+        game_state = [0, 0]
+    elif server and not starting_player:
+        game_state = c.receive()
+
+    # Simulate game
     i = 0
     score = 0
-    win_limit = 20
+    win_limit = 30
 
     while i < 100:
         if game_state[0] > win_limit:
             if not starting_player:
-                return "You've lost!"
+                return False
 
         if game_state[1] > win_limit:
             if starting_player:
-                return "You've lost!"
+                return False
 
-        score += random.randrange(5)
-        if starting_player: game_state[0] += score
-        else: game_state[1] += score
+        score += random.randint(1,5)
+        side = random.randint(0,1)
+        game_state[side] += score
 
         if game_state[0] > win_limit:
             if starting_player:
-                c.send(["WIN", game_state])
-                return "You've won!"
+                c.send(game_state)
+                return True
 
         if game_state[1] > win_limit:
             if not starting_player:
-                c.send(["WIN", game_state])
-                return "You've won!"
+                c.send(game_state)
+                return True
 
         print(nick, "sent", game_state)
         c.send(game_state)
@@ -56,4 +77,3 @@ def online_vs(nick, c):
         t.sleep(0.1)
         score = 0
         i += 1
-

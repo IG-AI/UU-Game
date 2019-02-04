@@ -2,8 +2,9 @@ import sys
 import time as t
 from threading import Thread
 import random
-import game, server, client
+import game, server, client, peer
 import graphics as g
+
 
 def main():
     menu_options()
@@ -53,7 +54,7 @@ def menu_options():
 
                 elif choice == "O" or choice == "o":
                     online_tour_play()
-                    player = False
+                    playing = False
                     break
 
                 elif choice == "R" or choice == "r":
@@ -66,12 +67,12 @@ def menu_options():
     return
 
 def AI_vs():
-    result = game.vs_AI()
-    g.make_header(result)
+    result = game.local_vs("Player 1", "AI", [True, False])
+    g.make_header(result + " has won!")
 
 def local_vs():
-    result = game.local_vs("Player 1", "Player 2")
-    g.make_header(result)
+    result = game.local_vs("Player 1", "Player 2", [True, True])
+    g.make_header(result + " has won!")
 
 def local_tour_play():
     players = []
@@ -105,30 +106,24 @@ def online_vs():
     while True:
         choice = input("Do you wish to act as server? [" + g.color("G", "Y") + "]es [" + g.color("R", "N") + "]no ")
         if choice == "Y" or choice == "y":
-            s = server.Server()
-
-            t.sleep(0.2)                              # client is sometimes quicker than server to start
-            client_thread = Thread(target=run_client_single) # Starts thread to run client simultaneously as server
-            client_thread.daemon = True               # Thread will not block if not properly shut down(E.g server crashes)
-            client_thread.start()
-
-            s.accept_clients(2)
-            players = s.get_player_list()
-            winner = s.relay_game(players)
-            while client_thread.isAlive():            # Delay execution until thread is finished
-                t.sleep(0.1)
-            s.teardown()
-            return
+            c = peer.Peer(True)
+            c.accept_client()
+            win = game.online_vs("Player 1", c, True, True)
+            if win:
+                print("You've won!")
+            else: print("Loose")
+            c.teardown()
+            break
 
         elif choice == "N" or choice == "n":
-            c = client.Client("Client Player")
-            tmp = c.receive() # SYNC
-            result = game.online_vs("Client player", c)
-            g.make_header(result)
+            c = peer.Peer(False)
+            c.connect_to_server()
+            win = game.online_vs("Player 2", c, True, False)
+            if win:
+                print("You've won!")
+            else: print("Loose")
             c.teardown()
-            return
-
-    return
+            break
 
 def online_tour_play():
     g.make_header("Tournament play!")
@@ -136,75 +131,56 @@ def online_tour_play():
     while True:
         choice = input("Do you wish to act as server? [" + g.color("G", "Y") + "]es [" + g.color("R", "N") + "]no ")
         if choice == "Y" or choice == "y":
-            players = []
-
-            # Must be 4 atm
-            while True:
-                choice = input("How many players? [" + g.color("G", "3-8") + "] ")
-                if type(int(choice)) == int:
-                    choice = int(choice)
-                    if choice > 2 and choice < 9:
-                        break
-
-            # Get player name
-            s = server.Server()
-
-            t.sleep(0.2)                                   # client is sometimes quicker than server to start
-            client_thread = Thread(target=run_client_tour) # Starts thread to run client simultaneously as server
-            client_thread.daemon = True                    # Thread will not block if not properly shut down(E.g server crashes)
-            client_thread.start()
-
-            s.accept_clients(choice)
-            player_list = s.get_player_list()
-
-            # Temporary until tournament module is ready
-            final = []
-            match = []
-            i = 0
-            while i < 6:
-                if i < 4:
-                    match.append(player_list[i])
-                    match.append(player_list[i+1])
-                else:
-                    match = final
-                winner = s.relay_game(match)
-                final.append(winner)
-                match = []
-                i += 2
-
-            while client_thread.isAlive():                # Delay execution until thread is finished
-                t.sleep(0.1)
-            s.teardown()
+            c = peer.Peer(True)
+            c.accept_client()
+            plist, hlist = decide_online_tour_players(c)
+            print("Waiting for remote list of players...")
+            lists = c.receive()
+            remote_plist = lists[0]
+            remote_hlist = lists[1]
             return
 
-        else:
-            i = random.randrange(1000)
-            name = str(i)
-            c = client.Client(name)
-
-            while True:
-                tmp = c.receive() # SYNC
-                result = game.online_vs(name, c)
-                g.make_header(result + " You advance to the next round!")
+        elif choice == "N" or choice == "n":
+            c = peer.Peer(False)
+            c.connect_to_server()
+            player_list, human_list = decide_online_tour_players(c)
+            c.send((player_list, human_list))
+            return
 
 
-def run_client_single():
-    c = client.Client("Server player")
-    tmp = c.receive() # SYNC
-    result = game.online_vs("Server player", c)
-    g.make_header(result)
-    c.teardown()
-    return # Return to kill the thread that spawned this function.
-
-def run_client_tour():
-    i = random.randrange(1000)
-    name = str(i)
-    c = client.Client(name)
-
+def decide_online_tour_players(c):
     while True:
-        tmp = c.receive() # SYNC
-        result = game.online_vs(name, c)
-        g.make_header(result + " You advance to the next round!")
+        choice = input("How many players on this computer? [" + g.color("G", "1-7") + "](maximum 8 total) ")
+        if type(int(choice)) == int:
+            choice = int(choice)
+            if choice >= 1 and choice <= 7:
+                break
+
+    c.send(choice)
+    print("Confirming number of players...")
+    remote_choice = c.receive()
+    if remote_choice + choice > 8:
+        print("Your total is over 8. Try again")
+        decide_online_tour_players(c, server)
+
+
+    player_list = []
+    human_list = []
+    for player in range(choice):
+        name = input("Name player " + str(player+1) + ": ")
+        while True:
+            human = input("Is this a human player? [" + g.color("G", "Y") + "/" + g.color("R", "N") + "]")
+            if human == "Y" or choice == "y":
+                human = True
+                break
+            if human == "n" or choice == "n":
+                human = False
+                break
+
+        player_list.append(name)
+        human_list.append(human)
+
+    return player_list, human_list
 
 
 if __name__ == '__main__':
