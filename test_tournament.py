@@ -13,8 +13,11 @@ def main():
         print("Opponents: ", tournament1.opponents)
         winner = tournament1.opponents[random_number]
         print("Winners this game: ",  winner)
+        print("Winner_list_temp: ", tournament1.winner_list_temp)
+        print("Winner_list: ", tournament1.winner_list)
         tournament1.get_opponents(winner)
-    print("WINNER: ", tournament1.winner_list[0])
+    print("Winner_list: ", tournament1.winner_list)
+    print("WINNER: ", tournament1.winner_list[tournament1.tournament_depth][0])
 
 if __name__ == "__main__":
     main()
