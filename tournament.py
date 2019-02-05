@@ -289,6 +289,8 @@ class Tournament:
             print("", opponent07, "---|                      |")
             print("                   |---", opponent12, "---|")
             print("", opponent08, "---|")
+        else:
+            raise Exception("ERROR: To many players! Only 3 - 8 players are allowed.")
 
 # Helps the class to make the opponents_list
 def make_opponents_list(player_list):
