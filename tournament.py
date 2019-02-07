@@ -1,4 +1,5 @@
 import random
+from math import ceil
 
 class Tournament:
     tournament_depth = 0
@@ -9,38 +10,57 @@ class Tournament:
     # Initialize the tournament class, with a list of players as input.
     # To get the opponents do as follows: tournament1 = Tournament(player_list), opponents = tournament1.opponent_list
     def __init__(self, player_list):
-        self.current_player_list = player_list # List with the current players in the tournament
-        self.start_player_list = player_list # List with all players
-        self.users = [[self.start_player_list.copy()]]
+        self.waiting_player_list = player_list.copy() # List with the current players in the tournament
+        self.start_player_list = player_list.copy() # List with all players
         player_list_copy = player_list.copy()
-        self.opponents_list = make_opponents_list(player_list_copy)  # List with the current opponents
-        self.all_opponents = [self.opponents_list.copy()]
-        self.opponents = self.opponents_list.pop(0)
-        self.current_player_list.remove(self.opponents[0])
-        self.current_player_list.remove(self.opponents[1])
+        if ((len(player_list) % 2) == 0) | (len(player_list) == 3):
+            self.opponents_list = make_opponents_list(player_list_copy)  # List with the current opponents
+            self.all_opponents = [self.opponents_list.copy()]
+            self.opponents = self.opponents_list.pop(0)
+            self.waiting_player_list.remove(self.opponents[0])
+            self.waiting_player_list.remove(self.opponents[1])
+            for i in range(len(self.opponents_list)):
+                self.waiting_player_list.remove(self.opponents_list[i][0])
+                self.waiting_player_list.remove(self.opponents_list[i][1])
+        else:
+            player1 = random.choice(self.waiting_player_list)
+            self.waiting_player_list.remove(player1)
+            player2 = random.choice(self.waiting_player_list)
+            self.waiting_player_list.remove(player2)
+            self.opponents = [player1, player2]
+            self.opponents_list = []
+            self.all_opponents = [self.opponents.copy()]
 
     # Update the variable opponents. If the opponents_list is empty, the functions calls make_opponents_list to update
     # the opponents_list. If the current_player_list becomes equal to 1 and the winner_list becomes equal to 1 the
     # winner_state flags changes and a empty list is set to the variable opponents
     def get_opponents(self, winner):
-        winner_list = [winner]
-        if winner_list != []:
-            self.winner_list_temp.append(winner)
+        self.winner_list_temp.append(winner)
         if not self.opponents_list:
-            self.current_player_list = self.current_player_list + self.winner_list_temp
-            self.all_opponents.append(self.opponents_list)
-            self.opponents_list = make_opponents_list(self.winner_list_temp)
             self.winner_list.append(self.winner_list_temp)
-            self.winner_list_temp = []
+            self.opponents_list = update_opponents_list(self.winner_list_temp, self.waiting_player_list)
+            if len(self.waiting_player_list) % 2 == 1:
+                self.waiting_player_list.remove(self.opponents[1])
+            opponents_list_copy = self.opponents_list.copy()
+            self.all_opponents.append(opponents_list_copy)
             self.tournament_depth += 1
-        if (len(self.current_player_list) == 1) & (len(self.winner_list_temp) == 0):
-            self.tournament_depth -= 1
-            self.winner_state = 1
-            self.opponents = []
-            return ()
-        self.current_player_list.remove(self.opponents_list[0][0])
-        self.current_player_list.remove(self.opponents_list[0][1])
-        self.opponents = self.opponents_list.pop(0)
+            self.winner_list_temp = []
+        if self.winner_list:
+            if len(self.winner_list[self.tournament_depth - 1]) == 3:
+                print("test")
+                player1 = self.winner_list[self.tournament_depth - 1][0]
+                player2 = self.winner_list[self.tournament_depth - 1][1]
+                self.waiting_player_list.append(self.winner_list[self.tournament_depth - 1][-1])
+                self.opponents_list = [[player1, player2]]
+            elif ((len(self.winner_list[self.tournament_depth - 1]) == 1) & (len(self.start_player_list) == 3)) | \
+                    ((len(self.winner_list[self.tournament_depth - 1]) == 2) & (len(self.winner_list_temp) == 0)) | \
+                    ((len(self.winner_list[self.tournament_depth - 1]) == 1) & (len(self.winner_list_temp) == 0) & (len(self.all_opponents[self.tournament_depth]) != 2) & (len(self.all_opponents[self.tournament_depth]) != 3)):
+                self.tournament_depth -= 1
+                self.winner_state = 1
+                self.opponents = []
+                return ()
+        self.opponents = self.opponents_list[0]
+        self.opponents_list.remove(self.opponents)
 
     def print_scoreboard(self):
         cases = len(self.start_player_list)
@@ -292,7 +312,7 @@ class Tournament:
         else:
             raise Exception("ERROR: To many players! Only 3 - 8 players are allowed.")
 
-# Helps the class to make the opponents_list
+# Helps the class to make the opponents_listfloor
 def make_opponents_list(player_list):
     player_list_copy = player_list.copy()
     opponents_list = []
@@ -306,5 +326,46 @@ def make_opponents_list(player_list):
         opponents_list.append(opponents)
     return opponents_list
 
+def update_opponents_list(winner_list, waiting_players):
+    opponents_list = []
+    winner_list_copy = winner_list.copy()
+    player_number = len(winner_list)
+    if player_number % 2 == 0:
+        for i in range(int(player_number / 2)):
+            player1 = winner_list_copy[0]
+            winner_list_copy.remove(player1)
+            player2 = winner_list_copy[0]
+            winner_list_copy.remove(player2)
+            opponents = [player1, player2]
+            opponents_list.append(opponents)
+    else:
+        print(len(waiting_players))
+        if (len(winner_list_copy) == 1) & (len(waiting_players) != 5):
+            print("hej")
+            player1 = winner_list[0]
+            player2 = waiting_players[0]
+            waiting_players.remove(player2)
+            new_opponent = [player1, player2]
+            opponents_list = make_opponents_list(waiting_players)
+            opponents_list.insert(0, new_opponent)
+        elif len(waiting_players) == 5:
+            player1 = winner_list[0]
+            player2 = waiting_players[0]
+            waiting_players.remove(player2)
+            opponents_list =[[player1, player2]]
+            for i in range(int(len(waiting_players)/2)):
+                print("ueuh e:", waiting_players[1])
+                player1 = waiting_players[0]
+                player2 = waiting_players[1]
+                waiting_players.remove(player1)
+                waiting_players.remove(player2)
+                opponents_list.append([player1, player2])
+        else:
+            player2 = random.choice(winner_list_copy)
+            winner_list_copy.remove(player2)
+            opponents_list = make_opponents_list(winner_list_copy)
+    opponents_list
+    return opponents_list
+
 if __name__ == "__main__":
-    Tournament()
+    Tournament([1,2,3,4,5,6,7,8])
