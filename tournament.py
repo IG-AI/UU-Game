@@ -1,5 +1,4 @@
 import random
-from math import ceil
 
 class Tournament:
     tournament_depth = 0
@@ -47,7 +46,6 @@ class Tournament:
             self.winner_list_temp = []
         if self.winner_list:
             if len(self.winner_list[self.tournament_depth - 1]) == 3:
-                print("test")
                 player1 = self.winner_list[self.tournament_depth - 1][0]
                 player2 = self.winner_list[self.tournament_depth - 1][1]
                 self.waiting_player_list.append(self.winner_list[self.tournament_depth - 1][-1])
@@ -339,9 +337,7 @@ def update_opponents_list(winner_list, waiting_players):
             opponents = [player1, player2]
             opponents_list.append(opponents)
     else:
-        print(len(waiting_players))
         if (len(winner_list_copy) == 1) & (len(waiting_players) != 5):
-            print("hej")
             player1 = winner_list[0]
             player2 = waiting_players[0]
             waiting_players.remove(player2)
@@ -354,7 +350,6 @@ def update_opponents_list(winner_list, waiting_players):
             waiting_players.remove(player2)
             opponents_list =[[player1, player2]]
             for i in range(int(len(waiting_players)/2)):
-                print("ueuh e:", waiting_players[1])
                 player1 = waiting_players[0]
                 player2 = waiting_players[1]
                 waiting_players.remove(player1)
