@@ -29,13 +29,12 @@ class Peer:
         print("Waiting for incoming connection...")
         try:
             self.CONNECTION, _ = self.ACCEPT_SOCKET.accept()
+            print("Client connected!")
 
         except KeyboardInterrupt:
             print("\nStopped incoming connections")
             self.ACCEPT_SOCKET.close()
             return
-
-    print("Client connected!")
 
     def connect_to_server(self):
         print("Connecting to server...")
