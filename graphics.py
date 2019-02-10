@@ -1,7 +1,9 @@
-import sys
-import time as t
+#!/usr/bin/env python3
 
 class tc:
+    """
+    A class to hold shorthands for different color formats
+    """
     PURPLE = '\033[95m'
     BLUE = '\033[94m'
     GREEN = '\033[92m'
@@ -12,6 +14,18 @@ class tc:
     UNDERLINE = '\033[4m'
 
 def make_header(title):
+    """
+    Sig:    string ==> string
+    Pre:    string is shorter than 48
+    Post:   string formatted as a pretty header
+
+    Example:
+             make_header("header!") ==>
+             --------------------------------------------------
+             |                     header!                    |
+             --------------------------------------------------
+
+    """
     header = ""
     width = 50
     color_length = 9
@@ -37,6 +51,15 @@ def make_header(title):
     print(header)
 
 def color(color, text):
+    """
+    Sig:    string, string ==> string
+    Pre:    color is "G", "P", or "R"
+    Post:   string in the color indicated by variable color
+
+    Example:
+             color("G", "text") ==> "<green>text"
+             color("P", "text") ==> "<purple>text"
+    """
     if color == "G":
         return tc.GREEN + text + tc.ENDTC
 
@@ -48,22 +71,3 @@ def color(color, text):
 
     else:
         return text
-
-def animation():
-    symbols = [':', ' ']
-    i = 0
-    while True:
-        sys.stdout.write(symbols[i])
-        sys.stdout.write("\b")
-        sys.stdout.flush()
-        time.sleep(0.2)
-        if i == 0: i += 1
-        else: i = 0
-
-def dots():
-    while True:
-        for i in range(3):
-            sys.stdout.write('.')
-            sys.stdout.flush()
-            t.sleep(0.2)
-        sys.stdout.write('\b\b\b')

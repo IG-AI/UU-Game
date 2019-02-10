@@ -4,6 +4,13 @@ import client
 import time as t
 
 def local_vs(players, humans):
+    """
+    Simulates a local game.
+    players : array
+        List of strings, which represents the players
+    humans : array
+        List of booleans, representing whether players are human or NPC
+    """
     if humans[0]:
         tmp = "tmp" # Make player 1 NPC
     elif humans[1]:
@@ -17,6 +24,46 @@ def local_vs(players, humans):
     else: return players[1]
 
 def online_vs(nick, c, human, server):
+    """
+    Simulates an online game
+    nick : string
+        String representing local player's name
+    c : Peer
+        Class Peer, connection with remote player
+    human : Boolean
+        True = Human player, False = NPC player
+    server : Boolean
+        Whether this player acts as server or not. Needed in order to properly synchronize peers
+
+    Notes
+    -----
+    The order of these events must be strictly kept in order for the connections to remain properly \
+    synchronized. This order is:
+
+    Server:
+    Determine whether starting or not, and send this to client
+    Wait for acknowledgement
+    Wait for gamestate if not first, otherwise determine first gamestate
+    REPEAT HERE
+    determine if remote player has won, return if true
+    update game state
+    check if local player has won, send game state if true and return
+    send game state
+    receive remote game state
+    loop from REPEAT HERE
+
+    client:
+    receive whether starting or not
+    send acknowledgement
+    wait for gamestate if not first, otherwise determine first gamestate
+    REPEAT HERE
+    determine if remote player has won, return if true
+    update game state
+    check if local player has won, send game state if true and return
+    send game state
+    receive remote game state
+    loop from REPEAT HERE
+    """
     starting_player = None
     if not human:
         tmp = "tmp" # Make this player NPC
@@ -27,30 +74,20 @@ def online_vs(nick, c, human, server):
         i = random.randint(0,1)
         if i == 1:
             starting_player = True
-            print("Sent WAIT")
             c.send("WAIT")
-            print("Waiting for ack")
             c.receive()
         else:
             starting_player = False
-            print("Sent START")
             c.send("START")
-            print("Waiting for ack")
             c.receive()
     else:
-        print("Waiting to receive first/not...")
         ack = c.receive()
         if ack == "WAIT":
-            print("Recieved WAIT")
             starting_player = False
-            print("Sending ACK")
             c.send("ACK")
-            print("Waiting to receive first game state...")
             game_state = c.receive()
         else:
-            print("Received ELSE")
             starting_player = True
-            print("Sending ACK")
             c.send("ACK")
             game_state = [0, 0]
 

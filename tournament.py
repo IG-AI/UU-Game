@@ -2,37 +2,49 @@
 import random
 import graphics as g
 
-def main():
-    plist = ["ETT", "TVÅ", "TRE", "FYRA", "FEM", "SEX", "SJU", "ÅTTA"]
-    t = Tour(plist)
-    t.display_board()
-    game = t.get_next_game()
-    t.set_winner(game, game.tmp())
-    t.display_board()
-    game = t.get_next_game()
-    t.set_winner(game, game.tmp())
-    t.display_board()
-    game = t.get_next_game()
-    t.set_winner(game, game.tmp())
-    t.display_board()
-    game = t.get_next_game()
-    t.set_winner(game, game.tmp())
-    t.display_board()
-    game = t.get_next_game()
-    t.set_winner(game, game.tmp())
-    t.display_board()
-    game = t.get_next_game()
-    t.set_winner(game, game.tmp())
-    t.display_board()
-    game = t.get_next_game()
-
-
 class Tournament:
+    """
+    A class which makes a tournament bracket.
+    Determines which game is next to be played, based on previous \
+    match results, fed back into tournament. Also produces string \
+    of bracket
+
+    Attributes
+    ----------
+    game_list : dictionary
+        A dictionary containing all the games to be played. \
+        keyed by a int
+    next_game : int
+        A int representing the next game, contained in game_list \
+        to be played
+    nr_games : int
+        int reprsenting number of games in tournament
+
+    Methods
+    -------
+    get_next_game(self)
+        Retrieves next game from game_list and returns it
+    set_winner(self, game, winner)
+        Sets a winner of a certain game, to determine players of \
+        future games
+    get_bracket(self)
+        Formats a string of the tournament bracket and returns it
+    """
     game_list = {}
     next_game = 0
     nr_games = 0
 
     def __init__(self, player_list_orig):
+        """
+        Creates all Game(s), determines tournament order depending on tournament size.
+        player_list_orig is copied due to the nature of selecting players. \
+        It removes them from the list as they are selected.
+
+        Parameters
+        ----------
+        player_list_orig : array
+            list of players participating in tournament
+        """
         player_list = player_list_orig.copy()
         nr_players = len(player_list)
         if nr_players == 3:
@@ -176,6 +188,10 @@ class Tournament:
 
 
     def get_next_game(self):
+        """
+        returns next game to be played, increments next_game int.
+        If final game has been played, returns "END"
+        """
         if self.next_game == self.nr_games:
             return "END"
         else:
@@ -184,10 +200,21 @@ class Tournament:
             return game
 
     def set_winner(self, game, winner):
+        """
+        Sets winner of game. Logic for this is contained in Game class
+        Parameters
+        ----------
+        game : Game
+            game in which a winner has been determined
+        winner : string
+            Name of winner of game
+        """
         game.advance_player(winner)
 
     def get_bracket(self):
-
+        """
+        Formats bracket into a string, bracket is formatted as a list of games
+        """
         i = 1
         display = ""
         for game in self.game_list:
@@ -207,33 +234,83 @@ class Tournament:
         return display
 
 class Game:
+    """
+    A class to keep track of which game leads to which in the tournament. Contains \
+    various data related to actual games
+
+    Attributes
+    ----------
+    child : Game
+        game which winner of current game should advance tournament
+    ID : int
+        Identity of game. This is to be able to print identity of games in tournament
+    player1 : string
+        The name of a player in game
+    player2 : string
+        The name of a player in game
+    """
     child = None
     ID = 0
     player1 = ""
     player2 = ""
 
     def __init__(self, player1, player2, ID):
+        """
+        Creates game
+
+        Parameters
+        ----------
+        player1 : string
+            The name of a player in game
+        player2 : string
+            The name of a player in game
+        ID : int
+            Identity of game
+        """
         self.ID = ID
         self.player1 = player1
         self.player2 = player2
 
-    def display_game(self):
-        print(self.player1, "vs", self.player2)
-
     def get_ID(self):
+        """
+        Returns identity of this game
+        """
         return self.ID
 
     def set_child(self, child):
+        """
+        Sets subsequent game this game leads to
+
+        Parameters
+        ----------
+        child : Game
+            Game which winner of this game will advance to.
+        """
         self.child = child
 
     def get_child(self):
+        """
+        Returns this game's child
+        """
         if self.child:
             return self.child
 
     def get_players(self):
+        """
+        Returns this game's players, in the form of a array
+        """
         return [self.player1, self.player2]
 
     def set_next(self, player):
+        """
+        Sets the players in this game.
+
+        Raises
+        ------
+        Exception
+            If both players have already been set, Exception is raised to avoid problems \
+            further down in execution
+        """
         if self.player1 == "TBD":
             self.player1 = player
         elif self.player2 == "TBD":
@@ -242,14 +319,28 @@ class Game:
             raise Exception("Trying to fill full game")
 
     def advance_player(self, player):
+        """
+        Sets a player of this games child.
+
+        Parameters
+        ----------
+        player : string
+            player which should be set
+        """
         if self.child:
             self.child.set_next(player)
 
-    def tmp(self):
-        return self.player1
-
 
 def get_2_random(player_list):
+    """
+    Sig:    array ==> string, string
+    Pre:    player_list contains at least 2 players
+    Post:   two random players from array
+
+    Example:
+            get_2_random(["player1", "player2", "player3"]) ==> "player1", "player2"
+            get_2_random(["player1", "player2", "player3"]) ==> "player3", "player1"
+    """
     limit = len(player_list) - 1
     i = random.randint(0,limit)
     p1 = player_list[i]
