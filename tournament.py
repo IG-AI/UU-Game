@@ -95,7 +95,6 @@ class Tournament:
                         ((len(self.start_player_list) == 6) & (self.tournament_depth == 3)) | \
                         ((len(self.start_player_list) == 7) & (self.tournament_depth == 4)) | \
                         ((len(self.start_player_list) == 8) & (self.tournament_depth == 3)):
-                    print(self.winner_list)
                     self.winner_state = 1
                     self.opponents = []
                     return ()
@@ -111,11 +110,8 @@ class Tournament:
                 if (len(self.waiting_players) % 2 == 1) & (len(self.start_player_list) == 3):
                     self.waiting_players.remove(self.opponents[0])
                 if (len(self.waiting_players) == 2) & (len(self.start_player_list) == 5):
-                    print(self.opponents_queue)
                     self.waiting_players.remove(self.opponents_queue[1][0])
-                    print(self.opponents_queue[1][0])
                     self.waiting_players.remove(self.opponents_queue[1][1])
-                    print(self.opponents_queue[1][1])
                 self.all_opponents.append(self.opponents_queue.copy())
         self.opponents = self.opponents_queue[0]
         self.opponents_queue.remove(self.opponents)
