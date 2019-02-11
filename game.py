@@ -1,6 +1,5 @@
 import sys
 import random
-import client
 import time as t
 
 def local_vs(players, humans):
