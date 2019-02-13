@@ -5,7 +5,7 @@ import time as t
 import random
 import game, peer
 import graphics as g
-import tournament as tour
+import tournament2 as tour
 
 
 def main():
