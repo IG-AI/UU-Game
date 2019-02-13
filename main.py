@@ -246,16 +246,17 @@ def server_side_tournament():
     data = {}                           # Dictionary containing various data needed by remote peer
     data["instruction"] = None          # Instructions in the form of strings
     data["player"] = None               # Player or players to play next game
-    data["tour"] = t.get_scoreboard() # String representing current tournament bracket
+    data["tour"] = t.get_scoreboard()   # String representing current tournament bracket
     c.send(data)                        # Send initial tournament bracket
     c.receive()                         # Receive acknowledgement, to sync with remote
     winners = []
 
     while True:
         g.make_header("Tournament Standings")
-        data["tour"] = t.get_scoreboard()
         for winner in winners:
             t.next_game(winner)
+        data["tour"] = t.get_scoreboard()
+        print(data["tour"])
         end = t.winner_state  # Get and check if there are more games to be played
         players = t.opponents
         winners = []

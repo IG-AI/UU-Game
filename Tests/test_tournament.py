@@ -2,7 +2,7 @@ import tournament as t
 import random
 
 def main():
-    players = 8
+    players = 4
     player_list = []
     player_name = ["Pettersson", "Undran", "Ola", "Mr.X", "Bumbi-Bu", "Pelle", "Gerald", "Ronald", "Nisse", "Megamen", "Baby-Jesus", "Tyke", "Kim", "Q"]
     for i in range(players):
