@@ -10,7 +10,7 @@ def main():
         player_name.remove(temp)
         player_list.append(temp)
     tournament1 = t.Tournament(player_list)
-    tournament1.print_scoreboard()
+    print(tournament1.get_scoreboard())
     while tournament1.winner_state == 0:
         print("Players waiting: ", tournament1.waiting_players)
         random_number = random.randint(0, 1)
@@ -24,7 +24,7 @@ def main():
         print()
         print("-------------------------------------------------------------")
         tournament1.next_game(winner)
-        tournament1.print_scoreboard()
+        print(tournament1.get_scoreboard())
     print("Winner_list: ", tournament1.winner_list)
     print("OPPONENTS: ", tournament1.all_opponents)
     print("WINNER: ", tournament1.winner_list[tournament1.tournament_depth - 1][0])
