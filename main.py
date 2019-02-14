@@ -26,17 +26,12 @@ def menu_options():
     playing = True
     while playing:
         g.make_header("Welcome to <game>!")
-        print("You have the following options:\n" + "[" + g.color("G", "S") + "]ingle player\n1[" + g.color("G", "v")\
+        print("You have the following options:\n 1[" + g.color("G", "v")\
               + "]s1\n["  + g.color("G", "T") + "]ournament\n[" + g.color("R", "Q") + "]uit ")
         choice = input("Please make your " + g.color("G", "choice: "))
 
-        # Single player game
-        if choice == "S" or choice == "s":
-            AI_vs()
-            break
-
         # 1 vs 1 game
-        elif choice == "V" or choice == "v":
+        if choice == "V" or choice == "v":
             while True:
                 print("Do you wish to play [" + g.color("G", "L") + "]ocal or [" + g.color("G", "O") + "]nline?\n["\
                       + g.color("R", "R") + "]eturn to previous options\n[" + g.color("R", "Q") + "]uit ")
@@ -95,23 +90,14 @@ def menu_options():
         else: print("Invalid choice, try again")
 
 
-def AI_vs():
-    """
-    Sig:    None
-    Pre:    None
-    Post:   A game played against a computer controlled player
-    """
-    result = game.local_vs(["Player 1", "NPC"], [True, False])
-    g.make_header(result + " has won!")
-
-
 def local_vs():
     """
     Sig:    None
     Pre:    None
-    Post:   A game played between between two humans
+    Post:   A game played between between two players
     """
-    result = game.local_vs(["Player 1", "Player 2"], [True, True])
+    players, humans = get_local_names()
+    result = game.local_vs(players, humans)
     g.make_header(result + " has won!")
 
 
@@ -122,14 +108,15 @@ def online_vs():
     Post:   A game played between against a remote player
     """
     while True:
+        name, human = get_online_name()
         choice = input("Do you wish to act as server? [" + g.color("G", "Y") + "]es [" \
                        + g.color("R", "N") + "]no\n[" + g.color("R", "Q") + "]uit ")
         if choice == "Y" or choice == "y":
             # Create peer which will act as server
             c = peer.Peer(True)
             c.accept_client()
-            # Name, peer, Human = True, Server = True
-            win = game.online_vs("Player 1", c, True, True)
+            # Name, peer, Human, Server
+            win = game.online_vs(name, c, human, True)
             if win:
                 g.make_header("You've won!")
             else: g.make_header("You've lost!")
@@ -141,7 +128,7 @@ def online_vs():
             c = peer.Peer(False)
             c.connect_to_server()
             # Name, peer, Human = True, Server = False
-            win = game.online_vs("Player 2", c, True, False)
+            win = game.online_vs(name, c, human, False)
             if win:
                 g.make_header("You've won!")
             else: g.make_header("You've lost!")
@@ -368,6 +355,37 @@ def client_side_tournament():
         else:
             raise Exception("Invalid instructions recived from server:", data["instruction"])
 
+def get_local_names():
+    players = []
+    humans = []
+
+    for i in range(2):
+        name = input("Name player " + str(i+1) + ": ")
+        while True:
+            human = input("Is this a human player? [" + g.color("G", "Y") + "/" + g.color("R", "N") + "]")
+            if human == "Y" or human == "y":
+                human = True
+                break
+            if human == "n" or human == "n":
+                human = False
+                break
+        players.append(name)
+        humans.append(human)
+
+    return players, humans
+
+def get_online_name():
+    name = input("Input your name: ")
+    while True:
+        human = input("Are you a human player? [" + g.color("G", "Y") + "/" + g.color("R", "N") + "]")
+        if human == "Y" or human == "y":
+            human = True
+            break
+        if human == "n" or human == "n":
+            human = False
+            break
+
+    return name, human
 
 def decide_online_tour_players(c):
     """
