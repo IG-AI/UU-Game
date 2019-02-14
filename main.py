@@ -352,6 +352,11 @@ def client_side_tournament():
             raise Exception("Invalid instructions recived from server:", data["instruction"])
 
 def get_local_names():
+    """
+    Sig:    None
+    Pre:    None
+    Post:   List of names, and list of booleans corresponding to whether player is human or NPC
+    """
     players = []
     humans = []
 
@@ -371,6 +376,11 @@ def get_local_names():
     return players, humans
 
 def get_online_name():
+    """
+    Sig:    None
+    Pre:    None
+    Post:   Name, and boolean corresponding to whether player is human or NPC
+    """
     name = input("Input your name: ")
     while True:
         human = input("Are you a human player? [" + g.color("G", "Y") + "/" + g.color("R", "N") + "]")
