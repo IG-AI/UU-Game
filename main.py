@@ -97,7 +97,12 @@ def local_vs():
     Post:   A game played between between two players
     """
     players, humans = get_local_names()
-    result = game.local_vs(players, humans)
+    while True:
+        result = game.local_vs(players, humans)
+        if result != "DRAW":
+            break
+        else:
+            g.make_header("Game draw! Replay game")
     g.make_header(result + " has won!")
 
 
@@ -115,9 +120,14 @@ def online_vs():
             # Create peer which will act as server
             c = peer.Peer(True)
             c.accept_client()
-            # Name, peer, Human, Server
-            win = game.online_vs(name, c, human, True)
-            if win:
+            while True:
+                # Name, peer, Human, Server
+                win = game.online_vs(name, c, human, True)
+                if win != "DRAW":
+                    break
+                else:
+                    g.make_header("Game draw! Replay game")
+            if win == name:
                 g.make_header("You've won!")
             else: g.make_header("You've lost!")
             c.teardown()
@@ -127,9 +137,15 @@ def online_vs():
             # Create peer which will act as client
             c = peer.Peer(False)
             c.connect_to_server()
+            while True:
+                # Name, peer, Human, Server
+                win = game.online_vs(name, c, human, False)
+                if win != "DRAW":
+                    break
+                else:
+                    g.make_header("Game draw! Replay game")
             # Name, peer, Human = True, Server = False
-            win = game.online_vs(name, c, human, False)
-            if win:
+            if win == name:
                 g.make_header("You've won!")
             else: g.make_header("You've lost!")
             c.teardown()
@@ -186,7 +202,12 @@ def local_tour_play():
         else:
             g.make_header("Up next: " + players[0] + " vs " + players[1])
             humans = [human_dict[players[0]], human_dict[players[1]]]
-            winner = game.local_vs(players, humans)
+            while True:
+                winner = game.local_vs(players, humans)
+                if winner != "DRAW":
+                    break
+                else:
+                    g.make_header("Draw game! Replaying game")
             players = t.next_game(winner)
             g.make_header(winner + " has advanced to the next round!")
 
@@ -262,7 +283,15 @@ def server_side_tournament():
                 data["instruction"] = "WAIT"
                 c.send(data)
                 humans = [hdict[players[0]], hdict[players[1]]]
-                winner = game.local_vs(players, humans)
+
+                while True:
+                    # Name, peer, Human, Server
+                    winner = game.local_vs(players, humans)                
+                    if winner != "DRAW":
+                        break
+                    else:
+                        g.make_header("Game draw! Replay game")
+
                 winners.append(winner)
                 g.make_header(winner + " has advanced to the next round!")
 
@@ -271,7 +300,14 @@ def server_side_tournament():
                 data["instruction"] = "XPLAY"
                 data["player"] = players[1]
                 c.send(data)
-                winner = game.online_vs(players[0], c, hdict[players[0]], True)
+
+                while True:
+                    winner = game.online_vs(players[0], c, hdict[players[0]], True)
+                    if winner != "DRAW":
+                        break
+                    else:
+                        g.make_header("Game draw! Replay game")
+
                 if winner:
                     winners.append(winner)
                     g.make_header(winner + " has advanced to the next round!")
@@ -285,7 +321,14 @@ def server_side_tournament():
                 data["instruction"] = "XPLAY"
                 data["player"] = players[0]
                 c.send(data)
-                winner = game.online_vs(players[1], c, hdict[players[1]], True)
+
+                while True:
+                    winner = game.online_vs(players[1], c, hdict[players[1]], True)
+                    if winner != "DRAW":
+                        break
+                    else:
+                        g.make_header("Game draw! Replay game")
+
                 if winner:
                     winners.append(winner)
                     g.make_header(winner + " has advanced to the next round!")
@@ -333,7 +376,14 @@ def client_side_tournament():
         elif data["instruction"] == "XPLAY":
             # Cross play game
             print("Starting online game...")
-            winner = game.online_vs(data["player"], c, human_dict[data["player"]], False)
+
+            while True:
+                winner = game.online_vs(data["player"], c, human_dict[data["player"]], False)
+                if winner != "DRAW":
+                    break
+                else:
+                    g.make_header("Game draw! Replay game")
+
             if winner:
                 g.make_header(winner + " has advanced to the next round!")
             else:
@@ -342,7 +392,14 @@ def client_side_tournament():
         elif data["instruction"] == "PLAY":
             # Local game
             humans = [human_dict[data["player"][0]], human_dict[data["player"][1]]]
-            winner = game.local_vs(data["player"], humans)
+
+            while True:
+                winner = game.local_vs(data["player"], humans)
+                if winner != "DRAW":
+                    break
+                else:
+                    g.make_header("Game draw! Replay game")
+            
             g.make_header(winner + " has advanced to the next round!")
             c.send(winner)
             print("Sent", winner)
