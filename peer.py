@@ -114,4 +114,4 @@ class Peer:
 
 
 if __name__ == "__main__":
-	Peer()
+	Peer(False)
