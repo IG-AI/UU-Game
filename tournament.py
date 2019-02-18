@@ -21,10 +21,11 @@ class Tournament:
     -------
     next_game(self, winner)
         Retrieves the next opponents from opponents_queue and returns it. It also adds the winners to winner_list_temp.
-        If the opponents_queue are empty, its gets updated with new opponents based on the winners and waiting players and
-        winner_list_temp gets appended to winner_list and then gets zeroed.
+        If the opponents_queue is empty, its gets updated with new opponents based on the winners and waiting players
+        and winner_list_temp gets appended to winner_list and then gets zeroed.
     print_scoreboard(self)
         Formats a string of the tournament bracket and returns it
+
     """
     tournament_depth = 0
     winner_state = 0
@@ -47,12 +48,23 @@ class Tournament:
         opponents_queue : list of lists
             List with the current opponents, represented by lists with two opponents.
         all_opponents : list of lists of lists
-            List with all opponents, represented by lists with for each game iteration with
-            lists of two opponents inside.
-        opponents : List
+            A list with all opponents, represented by lists for each game iteration
+            with lists of opponents for each game.
+        opponents : list
             List with active opponents
-        waiting_players: List
+        self.waiting_players: list
             List of players who haven't been paired with any opponents.
+
+        Parameters
+        ----------
+        player_list : list
+            list of players participating in the current tournament in the form of strings.
+
+        Raises
+        ------
+        Exception
+            If the numbers of players aren't between 3 to 8 players, Exception is raised because the tournament
+            isn't built to handle that amount of players.
         """
         if (len(player_list) < 3) | (len(player_list) > 8):
             raise Exception("Error: It has to be between 3 - 8 players!")
@@ -79,8 +91,14 @@ class Tournament:
     def next_game(self, winner):
         """
         Retrieves the next opponents from opponents_queue and returns it. It also adds the winners to winner_list_temp.
-        If the opponents_queue are empty, its gets updated with new opponents based on the winners and waiting players and
-        winner_list_temp gets appended to winner_list and then gets zeroed.
+        If the opponents_queue are empty, its gets updated with new opponents based on the winners and waiting players
+        with the help from the method update_opponents and winner_list_temp gets appended to winner_list and then gets
+        zeroed.
+
+        Parameters
+        ----------
+        winner : string
+            The name of the current games winner
         """
         self.winner_list_temp.append(winner)
         if not self.opponents_queue:
@@ -119,23 +137,23 @@ class Tournament:
 
     def get_scoreboard(self):
         """
-        Prints the scoreboard
+        Formats a string of the tournament bracket and returns it.
         """
         cases = len(self.start_player_list)
 
-        opponent03 = "NaN"
-        opponent04 = "NaN"
-        opponent05 = "NaN"
-        opponent06 = "NaN"
-        opponent07 = "NaN"
-        opponent08 = "NaN"
-        opponent09 = "NaN"
-        opponent10 = "NaN"
-        opponent11 = "NaN"
-        opponent12 = "NaN"
-        opponent13 = "NaN"
-        opponent14 = "NaN"
-        winner = "NaN"
+        opponent03 = "N/A"
+        opponent04 = "N/A"
+        opponent05 = "N/A"
+        opponent06 = "N/A"
+        opponent07 = "N/A"
+        opponent08 = "N/A"
+        opponent09 = "N/A"
+        opponent10 = "N/A"
+        opponent11 = "N/A"
+        opponent12 = "N/A"
+        opponent13 = "N/A"
+        opponent14 = "N/A"
+        winner = "N/A"
 
         display = "\n"
 
@@ -521,6 +539,15 @@ class Tournament:
         return display
 
 def make_opponents(player_list):
+    """
+    Makes and returns the opponents_queue for the first game iteration in the form of a list with the names of the
+    players in the form of strings.
+
+    Parameters
+    ----------
+    player_list : list
+        A list with all the players in the tournament in the form of strings.
+    """
     player_list_copy = player_list.copy()
     opponents_list = []
     player_number = len(player_list_copy)
@@ -541,6 +568,17 @@ def make_opponents(player_list):
     return opponents_list
 
 def update_opponents(winner_list, waiting_players):
+    """
+    Returns a updated opponents_queue with the new opponents for the current game iteration in the form of a list with
+    the names of the players in the form of strings.
+
+    Parameters
+    ----------
+    winner_list : list
+        A list with the winners of the current game iteration in the form of strings.
+    waiting_players : list
+        A list with unpaired players (players who aren't in the opponents_queue).
+    """
     opponents_list = []
     winner_list_copy = winner_list.copy()
     player_number = len(winner_list)
