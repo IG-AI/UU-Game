@@ -26,17 +26,12 @@ def menu_options():
     playing = True
     while playing:
         g.make_header("Welcome to <game>!")
-        print("You have the following options:\n" + "[" + g.color("G", "S") + "]ingle player\n1[" + g.color("G", "v")\
+        print("You have the following options:\n 1[" + g.color("G", "v")\
               + "]s1\n["  + g.color("G", "T") + "]ournament\n[" + g.color("R", "Q") + "]uit ")
         choice = input("Please make your " + g.color("G", "choice: "))
 
-        # Single player game
-        if choice == "S" or choice == "s":
-            AI_vs()
-            break
-
         # 1 vs 1 game
-        elif choice == "V" or choice == "v":
+        if choice == "V" or choice == "v":
             while True:
                 print("Do you wish to play [" + g.color("G", "L") + "]ocal or [" + g.color("G", "O") + "]nline?\n["\
                       + g.color("R", "R") + "]eturn to previous options\n[" + g.color("R", "Q") + "]uit ")
@@ -95,23 +90,19 @@ def menu_options():
         else: print("Invalid choice, try again")
 
 
-def AI_vs():
-    """
-    Sig:    None
-    Pre:    None
-    Post:   A game played against a computer controlled player
-    """
-    result = game.local_vs(["Player 1", "NPC"], [True, False])
-    g.make_header(result + " has won!")
-
-
 def local_vs():
     """
     Sig:    None
     Pre:    None
-    Post:   A game played between between two humans
+    Post:   A game played between between two players
     """
-    result = game.local_vs(["Player 1", "Player 2"], [True, True])
+    players, humans = get_local_names()
+    while True:
+        result = game.local_vs(players, humans)
+        if result != "DRAW":
+            break
+        else:
+            g.make_header("Game draw! Replay game")
     g.make_header(result + " has won!")
 
 
@@ -122,15 +113,21 @@ def online_vs():
     Post:   A game played between against a remote player
     """
     while True:
+        name, human = get_online_name()
         choice = input("Do you wish to act as server? [" + g.color("G", "Y") + "]es [" \
                        + g.color("R", "N") + "]no\n[" + g.color("R", "Q") + "]uit ")
         if choice == "Y" or choice == "y":
             # Create peer which will act as server
             c = peer.Peer(True)
             c.accept_client()
-            # Name, peer, Human = True, Server = True
-            win = game.online_vs("Player 1", c, True, True)
-            if win:
+            while True:
+                # Name, peer, Human, Server
+                win = game.online_vs(name, c, human, True)
+                if win != "DRAW":
+                    break
+                else:
+                    g.make_header("Game draw! Replay game")
+            if win == name:
                 g.make_header("You've won!")
             else: g.make_header("You've lost!")
             c.teardown()
@@ -140,9 +137,15 @@ def online_vs():
             # Create peer which will act as client
             c = peer.Peer(False)
             c.connect_to_server()
+            while True:
+                # Name, peer, Human, Server
+                win = game.online_vs(name, c, human, False)
+                if win != "DRAW":
+                    break
+                else:
+                    g.make_header("Game draw! Replay game")
             # Name, peer, Human = True, Server = False
-            win = game.online_vs("Player 2", c, True, False)
-            if win:
+            if win == name:
                 g.make_header("You've won!")
             else: g.make_header("You've lost!")
             c.teardown()
@@ -199,7 +202,12 @@ def local_tour_play():
         else:
             g.make_header("Up next: " + players[0] + " vs " + players[1])
             humans = [human_dict[players[0]], human_dict[players[1]]]
-            winner = game.local_vs(players, humans)
+            while True:
+                winner = game.local_vs(players, humans)
+                if winner != "DRAW":
+                    break
+                else:
+                    g.make_header("Draw game! Replaying game")
             players = t.next_game(winner)
             g.make_header(winner + " has advanced to the next round!")
 
@@ -275,7 +283,15 @@ def server_side_tournament():
                 data["instruction"] = "WAIT"
                 c.send(data)
                 humans = [hdict[players[0]], hdict[players[1]]]
-                winner = game.local_vs(players, humans)
+
+                while True:
+                    # Name, peer, Human, Server
+                    winner = game.local_vs(players, humans)                
+                    if winner != "DRAW":
+                        break
+                    else:
+                        g.make_header("Game draw! Replay game")
+
                 winners.append(winner)
                 g.make_header(winner + " has advanced to the next round!")
 
@@ -284,7 +300,14 @@ def server_side_tournament():
                 data["instruction"] = "XPLAY"
                 data["player"] = players[1]
                 c.send(data)
-                winner = game.online_vs(players[0], c, hdict[players[0]], True)
+
+                while True:
+                    winner = game.online_vs(players[0], c, hdict[players[0]], True)
+                    if winner != "DRAW":
+                        break
+                    else:
+                        g.make_header("Game draw! Replay game")
+
                 if winner:
                     winners.append(winner)
                     g.make_header(winner + " has advanced to the next round!")
@@ -298,7 +321,14 @@ def server_side_tournament():
                 data["instruction"] = "XPLAY"
                 data["player"] = players[0]
                 c.send(data)
-                winner = game.online_vs(players[1], c, hdict[players[1]], True)
+
+                while True:
+                    winner = game.online_vs(players[1], c, hdict[players[1]], True)
+                    if winner != "DRAW":
+                        break
+                    else:
+                        g.make_header("Game draw! Replay game")
+
                 if winner:
                     winners.append(winner)
                     g.make_header(winner + " has advanced to the next round!")
@@ -346,7 +376,14 @@ def client_side_tournament():
         elif data["instruction"] == "XPLAY":
             # Cross play game
             print("Starting online game...")
-            winner = game.online_vs(data["player"], c, human_dict[data["player"]], False)
+
+            while True:
+                winner = game.online_vs(data["player"], c, human_dict[data["player"]], False)
+                if winner != "DRAW":
+                    break
+                else:
+                    g.make_header("Game draw! Replay game")
+
             if winner:
                 g.make_header(winner + " has advanced to the next round!")
             else:
@@ -355,7 +392,14 @@ def client_side_tournament():
         elif data["instruction"] == "PLAY":
             # Local game
             humans = [human_dict[data["player"][0]], human_dict[data["player"][1]]]
-            winner = game.local_vs(data["player"], humans)
+
+            while True:
+                winner = game.local_vs(data["player"], humans)
+                if winner != "DRAW":
+                    break
+                else:
+                    g.make_header("Game draw! Replay game")
+            
             g.make_header(winner + " has advanced to the next round!")
             c.send(winner)
             print("Sent", winner)
@@ -368,6 +412,47 @@ def client_side_tournament():
         else:
             raise Exception("Invalid instructions recived from server:", data["instruction"])
 
+def get_local_names():
+    """
+    Sig:    None
+    Pre:    None
+    Post:   List of names, and list of booleans corresponding to whether player is human or NPC
+    """
+    players = []
+    humans = []
+
+    for i in range(2):
+        name = input("Name player " + str(i+1) + ": ")
+        while True:
+            human = input("Is this a human player? [" + g.color("G", "Y") + "/" + g.color("R", "N") + "]")
+            if human == "Y" or human == "y":
+                human = True
+                break
+            if human == "n" or human == "n":
+                human = False
+                break
+        players.append(name)
+        humans.append(human)
+
+    return players, humans
+
+def get_online_name():
+    """
+    Sig:    None
+    Pre:    None
+    Post:   Name, and boolean corresponding to whether player is human or NPC
+    """
+    name = input("Input your name: ")
+    while True:
+        human = input("Are you a human player? [" + g.color("G", "Y") + "/" + g.color("R", "N") + "]")
+        if human == "Y" or human == "y":
+            human = True
+            break
+        if human == "n" or human == "n":
+            human = False
+            break
+
+    return name, human
 
 def decide_online_tour_players(c):
     """

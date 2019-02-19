@@ -15,9 +15,14 @@ def local_vs(players, humans):
     elif humans[1]:
         tmp = "tmp" # Make player 2 NPC
 
-    outcome = random.randrange(2)
+ 
+
     print("Simulating local game...")
     t.sleep(2)
+    outcome = random.randrange(2)
+    if outcome == 1:
+        return "DRAW"
+    outcome = random.randrange(2)    
     if outcome == 1:
         return players[0]
     else: return players[1]
@@ -36,32 +41,8 @@ def online_vs(nick, c, human, server):
 
     Notes
     -----
-    The order of these events must be strictly kept in order for the connections to remain properly \
-    synchronized. This order is:
-
-    Server:
-    Determine whether starting or not, and send this to client
-    Wait for acknowledgement
-    Wait for gamestate if not first, otherwise determine first gamestate
-    REPEAT HERE
-    determine if remote player has won, return if true
-    update game state
-    check if local player has won, send game state if true and return
-    send game state
-    receive remote game state
-    loop from REPEAT HERE
-
-    client:
-    receive whether starting or not
-    send acknowledgement
-    wait for gamestate if not first, otherwise determine first gamestate
-    REPEAT HERE
-    determine if remote player has won, return if true
-    update game state
-    check if local player has won, send game state if true and return
-    send game state
-    receive remote game state
-    loop from REPEAT HERE
+    This is an example of how to use the Peer to communicate. Was used for testing \
+    the communication platform
     """
     starting_player = None
     if not human:
@@ -101,15 +82,7 @@ def online_vs(nick, c, human, server):
     score = 0
     win_limit = 30
 
-    while i < 100:
-        if game_state[0] > win_limit:
-            if not starting_player:
-                return False
-
-        if game_state[1] > win_limit:
-            if starting_player:
-                return False
-
+    while i < 9:
         score += random.randint(1,5)
         side = random.randint(0,1)
         game_state[side] += score
@@ -127,7 +100,21 @@ def online_vs(nick, c, human, server):
         print(nick, "sent", game_state)
         c.send(game_state)
         game_state = c.receive()
+        if game_state == "DRAW":
+            return "DRAW"
         print(nick, "received", game_state)
         t.sleep(0.1)
         score = 0
         i += 1
+
+        if game_state[0] > win_limit:
+            if not starting_player:
+                return False
+
+        if game_state[1] > win_limit:
+            if starting_player:
+                return False
+
+    # Draw
+    c.send("DRAW")
+    return "DRAW"
