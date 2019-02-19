@@ -14,7 +14,6 @@ class Tournament:
         and winner_list_temp gets appended to winner_list and then gets zeroed.
     print_scoreboard(self)
         Formats a string of the tournament bracket and returns it
-
     """
 
     def __init__(self, player_list):
@@ -58,6 +57,7 @@ class Tournament:
             If the numbers of players aren't between 3 to 8 players, Exception is raised because the tournament
             isn't built to handle that amount of players.
         """
+
         self.tournament_depth = 0
         self.winner_state = 0
         self.winner_list = []
