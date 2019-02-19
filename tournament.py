@@ -6,17 +6,6 @@ class Tournament:
     The first two opponents are added to a list and the rest of the paired opponents gets added to a queue.
     Unpaired players are added to a waiting list.
 
-    Attributes
-    ----------
-    tournament_depth : int
-        Numbers of game iterations.
-    winner_state : boolean
-        Flag that indicate if the game is done.
-    winner_list : list
-        Lists in list with the winning players from each game iteration.
-    winner_list_temp : list
-        List with the wining players from the active game iteration.
-
     Methods
     -------
     next_game(self, winner)
@@ -27,11 +16,6 @@ class Tournament:
         Formats a string of the tournament bracket and returns it
 
     """
-    tournament_depth = 0
-    winner_state = 0
-    winner_list = []
-    winner_list_temp = []
-
 
     def __init__(self, player_list):
         """
@@ -41,6 +25,14 @@ class Tournament:
 
         Attributes
         ----------
+        tournament_depth : int
+            Numbers of game iterations.
+        winner_state : boolean
+            Flag that indicate if the game is done.
+        winner_list : list
+            Lists in list with the winning players from each game iteration.
+        winner_list_temp : list
+            List with the wining players from the active game iteration.
         waiting_players : list
             List with the current players in the tournament.
         start_player_list : list
@@ -66,6 +58,11 @@ class Tournament:
             If the numbers of players aren't between 3 to 8 players, Exception is raised because the tournament
             isn't built to handle that amount of players.
         """
+        self.tournament_depth = 0
+        self.winner_state = 0
+        self.winner_list = []
+        self.winner_list_temp = []
+
         if (len(player_list) < 3) | (len(player_list) > 8):
             raise Exception("Error: It has to be between 3 - 8 players!")
         self.waiting_players = player_list.copy()
