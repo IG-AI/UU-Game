@@ -197,7 +197,7 @@ def local_tour_play():
         print(t.get_scoreboard())
         end = t.winner_state
         players = t.opponents
-        if end == 1:
+        if end == 1: # Last game already played
             break
         else:
             g.make_header("Up next: " + players[0] + " vs " + players[1])
@@ -208,7 +208,7 @@ def local_tour_play():
                     break
                 else:
                     g.make_header("Draw game! Replaying game")
-            players = t.next_game(winner)
+            t.next_game(winner) # Set winner of current game
             g.make_header(winner + " has advanced to the next round!")
 
     g.make_header(winner + " has won the tournament!")
@@ -265,7 +265,7 @@ def server_side_tournament():
             t.next_game(winner)
         data["tour"] = t.get_scoreboard()
         print(data["tour"])
-        end = t.winner_state  # Get and check if there are more games to be played
+        end = t.winner_state
         players = t.opponents
         winners = []
         if end == 1:
@@ -278,8 +278,9 @@ def server_side_tournament():
 
         else:
             g.make_header("Up next: " + players[0] + " vs " + players[1])
+
+            # Local game
             if players[0] in plist and players[1] in plist:       # If both players are local
-                # Local game
                 data["instruction"] = "WAIT"
                 c.send(data)
                 humans = [hdict[players[0]], hdict[players[1]]]
@@ -295,8 +296,8 @@ def server_side_tournament():
                 winners.append(winner)
                 g.make_header(winner + " has advanced to the next round!")
 
+            # Cross play game
             elif players[0] in plist and players[1] not in plist: # If one player is remote
-                # Cross play game
                 data["instruction"] = "XPLAY"
                 data["player"] = players[1]
                 c.send(data)
@@ -308,16 +309,16 @@ def server_side_tournament():
                     else:
                         g.make_header("Game draw! Replay game")
 
-                if winner:
+                if winner == players[0]: # If local player won
                     winners.append(winner)
                     g.make_header(winner + " has advanced to the next round!")
-                else:
-                    winner = players[1]
+                else:                    # If remote player won
+                    winner = players[1] 
                     winners.append(winner)
                     g.make_header(winner + " has advanced to the next round!")
-
+            
+            # Cross play game
             elif players[0] not in plist and players[1] in plist: # If one player is remote
-                # Cross play game
                 data["instruction"] = "XPLAY"
                 data["player"] = players[0]
                 c.send(data)
@@ -329,16 +330,16 @@ def server_side_tournament():
                     else:
                         g.make_header("Game draw! Replay game")
 
-                if winner:
+                if winner == players[1]: # If local player won
                     winners.append(winner)
                     g.make_header(winner + " has advanced to the next round!")
-                else:
+                else:                    # If remote player won
                     winner = players[0]
                     winners.append(winner)
                     g.make_header(winner + " has advanced to the next round!")
 
+            # Remote game
             elif players[0] not in plist and players[1] not in plist: # If both players are remote
-                # Remote game
                 data["instruction"] = "PLAY"
                 data["player"] = players
                 print("Waiting for remote game to conclude...")
@@ -368,13 +369,14 @@ def client_side_tournament():
         data = c.receive()             # Get instructions
         g.make_header("Tournament Standings")
         print(data["tour"])
+
+        # Remote game
         if data["instruction"] == "WAIT":
-            # Remote game
             print("Waiting for remote game to conclude...")
             continue
 
+        # Cross play game
         elif data["instruction"] == "XPLAY":
-            # Cross play game
             print("Starting online game...")
 
             while True:
@@ -384,13 +386,13 @@ def client_side_tournament():
                 else:
                     g.make_header("Game draw! Replay game")
 
-            if winner:
+            if winner == data["player"]: # If local player won
                 g.make_header(winner + " has advanced to the next round!")
-            else:
+            else:                        # If remote player won
                 g.make_header("Remote player advanced to the next round!")
 
+        # Local game
         elif data["instruction"] == "PLAY":
-            # Local game
             humans = [human_dict[data["player"][0]], human_dict[data["player"][1]]]
 
             while True:
@@ -404,6 +406,7 @@ def client_side_tournament():
             c.send(winner)
             print("Sent", winner)
 
+        # End tournament
         elif data["instruction"] == "COMPLETE":
             g.make_header(data["player"] + " has won the tournament!")
             c.teardown()

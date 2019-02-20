@@ -87,6 +87,8 @@ def online_vs(nick, c, human, server):
         side = random.randint(0,1)
         game_state[side] += score
 
+        # Determine after game state update if this player has won, send game state to \
+        # remote so that remote can also determine that it has lost
         if game_state[0] > win_limit:
             if starting_player:
                 c.send(game_state)
@@ -107,13 +109,14 @@ def online_vs(nick, c, human, server):
         score = 0
         i += 1
 
+        # Before updating game state, check if this player has lost
         if game_state[0] > win_limit:
             if not starting_player:
-                return False
+                return ""
 
         if game_state[1] > win_limit:
             if starting_player:
-                return False
+                return ""
 
     # Draw
     c.send("DRAW")
