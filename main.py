@@ -114,7 +114,7 @@ def online_vs():
     """
     while True:
         name, human = get_online_name()
-        choice = input("Do you wish to act as server? [" + g.color("G", "Y") + "]es [" \
+        choice = input("Are you the first to start the game? [" + g.color("G", "Y") + "]es [" \
                        + g.color("R", "N") + "]no\n[" + g.color("R", "Q") + "]uit ")
         if choice == "Y" or choice == "y":
             # Create peer which will act as server
@@ -163,32 +163,10 @@ def local_tour_play():
     Pre:    None
     Post:   A tournament played between local players. And termination of program
     """
-    player_list = [] # Strings of names
-    human_dict = {}  # Booleans. Key = player. True = Human, False = NPC
+    g.make_header("Tournament play!")
 
     # Determine players
-    g.make_header("Tournament play!")
-    while True:
-        choice = input("How many players? [" + g.color("G", "3-8") + "] ")
-        if type(int(choice)) == int:
-            choice = int(choice)
-            if choice > 2 and choice < 9:
-                break
-
-    # Determine names and human/computer controlled
-    for player in range(choice):
-        name = input("Name player " + str(player+1) + ": ")
-        while True:
-            human = input("Is this a human player? [" + g.color("G", "Y") + "/" + g.color("R", "N") + "]")
-            if human == "Y" or human == "y":
-                human = True
-                break
-            if human == "n" or human == "n":
-                human = False
-                break
-
-        player_list.append(name)
-        human_dict[name] = human
+    player_list, human_dict = decide_offline_tour_players()
 
     # Play tournament
     t = tour.Tournament(player_list)
@@ -224,7 +202,7 @@ def online_tour_play():
     g.make_header("Tournament play!")
 
     while True:
-        choice = input("Do you wish to act as server? [" + g.color("G", "Y") + "]es ["\
+        choice = input("Are you the first to start the game? [" + g.color("G", "Y") + "]es ["\
                        + g.color("R", "N") + "]no\n[" + g.color("R", "Q") + "]uit ")
         if choice == "Y" or choice == "y":
             server_side_tournament()
@@ -457,6 +435,44 @@ def get_online_name():
 
     return name, human
 
+def decide_offline_tour_players():
+    player_list = [] # Strings of names
+    human_dict = {}  # Booleans. Key = player. True = Human, False = NPC
+    # Decide nr players
+    while True:
+        choice = input("How many players? [" + g.color("G", "3-8") + "] ")
+        if type(int(choice)) == int:
+            choice = int(choice)
+            if choice > 2 and choice < 9:
+                break
+
+    nr_players = choice
+
+    # Decide nr AI players
+    while True:
+        choice = input("How many AI players? [" + g.color("G", "0-" + str(nr_players)) + "] ")
+        if type(int(choice)) == int:
+            choice = int(choice)
+            if choice <= nr_players:
+                break
+
+    nr_ai = choice
+
+    # Name human players
+    for player in range(nr_players-nr_ai):
+        name = input("Name player" + str(player+1) + ": ")
+        player_list.append(name)
+        human_dict[name] = True
+
+    # Name AI players
+    for player in range(nr_ai):
+        name = "AI" + str(player+1)
+        player_list.append(name)
+        human_dict[name] = False
+
+    return player_list, human_dict
+
+
 def decide_online_tour_players(c):
     """
     Sig:    Peer ==> array, dictionary
@@ -480,23 +496,28 @@ def decide_online_tour_players(c):
         print("Your total is over 8. Try again")
         decide_online_tour_players(c)
 
-
+    nr_players = choice
     player_list = [] # Strings of names
     human_dict = {}  # Booleans. Key = player. True = Human, False = NPC
     # Determine names and human/computer controlled
-    for player in range(choice):
-        name = input("Name player " + str(player+1) + ": ")
-        while True:
-            human = input("Is this a human player? [" + g.color("G", "Y") + "/" + g.color("R", "N") + "]")
-            if human == "Y" or human == "y":
-                human = True
-                break
-            if human == "n" or human == "n":
-                human = False
+    while True:
+        choice = input("How many AI players? [" + g.color("G", "0-" + str(nr_players)) + "] ")
+        if type(int(choice)) == int:
+            choice = int(choice)
+            if choice <= nr_players:
                 break
 
+    nr_ai = choice
+
+    for player in range(nr_players-nr_ai):
+        name = input("Name player" + str(player+1) + ": ")
         player_list.append(name)
-        human_dict[name] = human
+        human_dict[name] = True
+
+    for player in range(nr_ai):
+        name = "AI" + str(player+1)
+        player_list.append(name)
+        human_dict[name] = False
 
     return player_list, human_dict
 
