@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-import time as t
+#import time as t
 import random
 import game, peer
 import graphics as g
@@ -215,37 +215,51 @@ def online_tour_play():
 
         else: print("Invalid choice, try again")
 
-
 def server_side_tournament():
     """
     Sig:    None
     Pre:    None
     Post:   A tournament played between local, and remote players. And termination of program
+
+    Notes
+    -----
+    If multiple messages are sent in a row without being received, they will be concatenated in the pipeline \
+    and the receiving end will be unable to process the message. Therefor it is sometime needed to send \
+    junk messages to sync the clients
     """
     # Setup
     c = peer.Peer(True)
     c.accept_client()
-    plist, hdict = decide_online_tour_players(c)
+    player_list, human_dict = decide_online_tour_players(c, False)
     print("Waiting for remote list of players...")
-    remote_plist = c.receive()
-    t = tour.Tournament(plist + remote_plist)
+
+    # Sync player lists
+    remote_player_list = c.receive()
+    player_list = player_list + remote_player_list
+    c.send(player_list)
+    remote_human_dict = c.receive()
+    human_dict.update(remote_human_dict)
+    c.send(human_dict)
+    c.receive()                         # Block needed here to ensure clients are synced
+
+    # Create tournament and setup instructions
+    t = tour.Tournament(player_list)
     data = {}                           # Dictionary containing various data needed by remote peer
     data["instruction"] = None          # Instructions in the form of strings
-    data["player"] = None               # Player or players to play next game
+    data["players"] = None              # players to play next game
     data["tour"] = t.get_scoreboard()   # String representing current tournament bracket
     c.send(data)                        # Send initial tournament bracket
-    c.receive()                         # Receive acknowledgement, to sync with remote
-    winners = []
+    winner = ""
 
     while True:
         g.make_header("Tournament Standings")
-        for winner in winners:
-            t.next_game(winner)
         data["tour"] = t.get_scoreboard()
         print(data["tour"])
         end = t.winner_state
         players = t.opponents
         winners = []
+
+        # Completed tournament
         if end == 1:
             data["instruction"] = "COMPLETE"
             data["player"] = winner
@@ -255,79 +269,28 @@ def server_side_tournament():
             sys.exit()
 
         else:
-            g.make_header("Up next: " + players[0] + " vs " + players[1])
+            # Setup game
+            g.make_header("Up next: Local " + players[0] + " vs remote " + players[1])
+            data["players"] = players
+            data["instruction"] = "PLAY"
+            c.send(data)
 
-            # Local game
-            if players[0] in plist and players[1] in plist:       # If both players are local
-                data["instruction"] = "WAIT"
-                c.send(data)
-                humans = [hdict[players[0]], hdict[players[1]]]
+            while True:
+                winner = game.online_vs(players[0], c, human_dict[players[0]], True)
+                if winner != "DRAW":
+                    break
+                else:
+                    g.make_header("Game draw! Replay game")
 
-                while True:
-                    # Name, peer, Human, Server
-                    winner = game.local_vs(players, humans)                
-                    if winner != "DRAW":
-                        break
-                    else:
-                        g.make_header("Game draw! Replay game")
-
+            if winner == players[0]: # If local player won
+                winners.append(winner)
+                g.make_header(winner + " has advanced to the next round!")
+            else:                    # If remote player won
+                winner = players[1] 
                 winners.append(winner)
                 g.make_header(winner + " has advanced to the next round!")
 
-            # Cross play game
-            elif players[0] in plist and players[1] not in plist: # If one player is remote
-                data["instruction"] = "XPLAY"
-                data["player"] = players[1]
-                c.send(data)
-
-                while True:
-                    winner = game.online_vs(players[0], c, hdict[players[0]], True)
-                    if winner != "DRAW":
-                        break
-                    else:
-                        g.make_header("Game draw! Replay game")
-
-                if winner == players[0]: # If local player won
-                    winners.append(winner)
-                    g.make_header(winner + " has advanced to the next round!")
-                else:                    # If remote player won
-                    winner = players[1] 
-                    winners.append(winner)
-                    g.make_header(winner + " has advanced to the next round!")
-            
-            # Cross play game
-            elif players[0] not in plist and players[1] in plist: # If one player is remote
-                data["instruction"] = "XPLAY"
-                data["player"] = players[0]
-                c.send(data)
-
-                while True:
-                    winner = game.online_vs(players[1], c, hdict[players[1]], True)
-                    if winner != "DRAW":
-                        break
-                    else:
-                        g.make_header("Game draw! Replay game")
-
-                if winner == players[1]: # If local player won
-                    winners.append(winner)
-                    g.make_header(winner + " has advanced to the next round!")
-                else:                    # If remote player won
-                    winner = players[0]
-                    winners.append(winner)
-                    g.make_header(winner + " has advanced to the next round!")
-
-            # Remote game
-            elif players[0] not in plist and players[1] not in plist: # If both players are remote
-                data["instruction"] = "PLAY"
-                data["player"] = players
-                print("Waiting for remote game to conclude...")
-                c.send(data)
-                winner = c.receive()
-                winners.append(winner)
-                g.make_header(winner + " has advanced to the next round!")
-            else:
-                raise Exception("Cant find player")
-
+        t.next_game(winner)
 
 def client_side_tournament():
     """
@@ -338,60 +301,42 @@ def client_side_tournament():
     # Setup
     c = peer.Peer(False)
     c.connect_to_server()
-    player_list, human_dict = decide_online_tour_players(c)
-    c.send(player_list)                # Full player list needed by server in order to set up tournament
-    data = c.receive()                 # Receive initial tournament bracket
+    player_list, human_dict = decide_online_tour_players(c, True)
+
+    # Sync player lists
+    c.send(player_list)
+    player_list = c.receive()
+    c.send(human_dict)
+    human_dict = c.receive()
     c.send("ACK")                      # Sync with remote
+    data = c.receive()                 # Get initial tournament bracket
 
     while True:
-        data = c.receive()             # Get instructions
         g.make_header("Tournament Standings")
         print(data["tour"])
 
-        # Remote game
-        if data["instruction"] == "WAIT":
-            print("Waiting for remote game to conclude...")
-            continue
-
-        # Cross play game
-        elif data["instruction"] == "XPLAY":
-            print("Starting online game...")
-
-            while True:
-                winner = game.online_vs(data["player"], c, human_dict[data["player"]], False)
-                if winner != "DRAW":
-                    break
-                else:
-                    g.make_header("Game draw! Replay game")
-
-            if winner == data["player"]: # If local player won
-                g.make_header(winner + " has advanced to the next round!")
-            else:                        # If remote player won
-                g.make_header("Remote player advanced to the next round!")
-
-        # Local game
-        elif data["instruction"] == "PLAY":
-            humans = [human_dict[data["player"][0]], human_dict[data["player"][1]]]
-
-            while True:
-                winner = game.local_vs(data["player"], humans)
-                if winner != "DRAW":
-                    break
-                else:
-                    g.make_header("Game draw! Replay game")
-            
-            g.make_header(winner + " has advanced to the next round!")
-            c.send(winner)
-            print("Sent", winner)
-
         # End tournament
-        elif data["instruction"] == "COMPLETE":
+        if data["instruction"] == "COMPLETE":
             g.make_header(data["player"] + " has won the tournament!")
             c.teardown()
             sys.exit()
 
-        else:
-            raise Exception("Invalid instructions recived from server:", data["instruction"])
+        elif data["instruction"] == "PLAY":
+            players = data["players"]
+            g.make_header("Up next: Local " + players[1] + " vs remote " + players[0])
+            while True:
+                winner = game.online_vs(players[1], c, human_dict[players[1]], False)
+                if winner != "DRAW":
+                    break
+                else:
+                    g.make_header("Game draw! Replay game")
+
+            if winner == players[1]: # If local player won
+                g.make_header(winner + " has advanced to the next round!")
+            else:                    # If remote player won
+                g.make_header(players[0] + " has advanced to the next round!")
+
+        data = c.receive()
 
 def get_local_names():
     """
@@ -445,7 +390,6 @@ def decide_offline_tour_players():
             choice = int(choice)
             if choice > 2 and choice < 9:
                 break
-
     nr_players = choice
 
     # Decide nr AI players
@@ -455,7 +399,6 @@ def decide_offline_tour_players():
             choice = int(choice)
             if choice <= nr_players:
                 break
-
     nr_ai = choice
 
     # Name human players
@@ -465,15 +408,15 @@ def decide_offline_tour_players():
         human_dict[name] = True
 
     # Name AI players
-    for player in range(nr_ai):
-        name = "AI" + str(player+1)
+    names = ["SKYNET", "MAX HEADROOM", "WATSON", "DEEP THOUGHT", "J.A.R.V.I.S.", "R2D2", "MU-TH-UR 6000", "TÄNKANDE AUGUST"]
+    for nr in range(nr_ai):
+        name = names[nr]
         player_list.append(name)
         human_dict[name] = False
 
     return player_list, human_dict
 
-
-def decide_online_tour_players(c):
+def decide_online_tour_players(c, remote):
     """
     Sig:    Peer ==> array, dictionary
     Pre:    Peer is connected to another peer
@@ -494,7 +437,7 @@ def decide_online_tour_players(c):
     remote_choice = c.receive()
     if remote_choice + choice > 8:
         print("Your total is over 8. Try again")
-        decide_online_tour_players(c)
+        decide_online_tour_players(c, remote)
 
     nr_players = choice
     player_list = [] # Strings of names
@@ -506,16 +449,22 @@ def decide_online_tour_players(c):
             choice = int(choice)
             if choice <= nr_players:
                 break
-
     nr_ai = choice
 
+    # Name human players
     for player in range(nr_players-nr_ai):
         name = input("Name player" + str(player+1) + ": ")
         player_list.append(name)
         human_dict[name] = True
 
-    for player in range(nr_ai):
-        name = "AI" + str(player+1)
+    # Name AI players
+    names = ["SKYNET", "MAX HEADROOM", "WATSON", "DEEP THOUGHT", "J.A.R.V.I.S.", "R2D2", "MU-TH-UR 6000", "TÄNKANDE AUGUST"]
+    for nr in range(nr_ai):
+        # This is to ensure that server/client dont create players with the same name
+        if remote:
+            name = names[nr]            
+        else:
+            name = names[nr+4]
         player_list.append(name)
         human_dict[name] = False
 
