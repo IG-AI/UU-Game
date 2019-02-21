@@ -67,49 +67,117 @@ class TestPeer(unittest.TestCase):
         player_list = []
         with self.assertRaises(Exception):
             tour.Tournament(player_list)
+
+        player_list = [[],[],[]]
+        with self.assertRaises(Exception):
+            tour.Tournament(player_list)
         
         player_list = ["Erik", "Johan", "Fredrik", "Ilda", "Emma", "Sandra", "Davide", "Viktor"]
-        t = tour.Tournament(player_list)
-        initial_bracket = t.get_scoreboard()
-        players = t.opponents
+        t8 = tour.Tournament(player_list)
+        initial_bracket = t8.get_scoreboard()
+        players = t8.opponents
         self.assertEqual(2, len(players))
         self.assertNotEqual(players[0], players[1])
-        t.next_game(players[0])
-        players = t.opponents
-        self.assertNotEqual(initial_bracket, t.get_scoreboard())
-        t.next_game(players[0])
-        players = t.opponents
-        t.next_game(players[0])
-        players = t.opponents
-        t.next_game(players[0])
-        players = t.opponents
-        t.next_game(players[0])
-        players = t.opponents
-        t.next_game(players[0])
-        players = t.opponents
-        t.next_game(players[0])
-        players = t.opponents
+        t8.next_game(players[0])
+        players = t8.opponents
+        self.assertNotEqual(initial_bracket, t8.get_scoreboard())
+        t8.next_game(players[0])
+        players = t8.opponents
+        t8.next_game(players[0])
+        players = t8.opponents
+        t8.next_game(players[0])
+        players = t8.opponents
+        t8.next_game(players[0])
+        players = t8.opponents
+        t8.next_game(players[0])
+        players = t8.opponents
+        t8.next_game(players[0])
+        players = t8.opponents
         self.assertEqual(0, len(players))
 
         player_list = ["Erik", "Johan", "Fredrik", "Ilda", "Emma", "Sandra", "Davide"]
-        t2 = tour.Tournament(player_list)
-        initial_bracket = t2.get_scoreboard()
-        players = t2.opponents
+        t7 = tour.Tournament(player_list)
+        initial_bracket = t7.get_scoreboard()
+        players = t7.opponents
         self.assertEqual(2, len(players))
         self.assertNotEqual(players[0], players[1])
-        t2.next_game(players[0])
-        players = t2.opponents
-        self.assertNotEqual(initial_bracket, t2.get_scoreboard())
-        t2.next_game(players[0])
-        players = t2.opponents
-        t2.next_game(players[0])
-        players = t2.opponents
-        t2.next_game(players[0])
-        players = t2.opponents
-        t2.next_game(players[0])
-        players = t2.opponents
-        t2.next_game(players[0])
-        players = t2.opponents
+        t7.next_game(players[0])
+        players = t7.opponents
+        self.assertNotEqual(initial_bracket, t7.get_scoreboard())
+        t7.next_game(players[0])
+        players = t7.opponents
+        t7.next_game(players[0])
+        players = t7.opponents
+        t7.next_game(players[0])
+        players = t7.opponents
+        t7.next_game(players[0])
+        players = t7.opponents
+        t7.next_game(players[0])
+        players = t7.opponents
+        self.assertEqual(0, len(players))
+
+        player_list = ["Erik", "Johan", "Fredrik", "Ilda", "Emma", "Sandra"]
+        t6 = tour.Tournament(player_list)
+        initial_bracket = t6.get_scoreboard()
+        players = t6.opponents
+        self.assertEqual(2, len(players))
+        self.assertNotEqual(players[0], players[1])
+        t6.next_game(players[0])
+        players = t6.opponents
+        self.assertNotEqual(initial_bracket, t6.get_scoreboard())
+        t6.next_game(players[0])
+        players = t6.opponents
+        t6.next_game(players[0])
+        players = t6.opponents
+        t6.next_game(players[0])
+        players = t6.opponents
+        t6.next_game(players[0])
+        players = t6.opponents
+        self.assertEqual(0, len(players))
+
+        player_list = ["Erik", "Johan", "Fredrik", "Ilda", "Emma"]
+        t5 = tour.Tournament(player_list)
+        initial_bracket = t5.get_scoreboard()
+        players = t5.opponents
+        self.assertEqual(2, len(players))
+        self.assertNotEqual(players[0], players[1])
+        t5.next_game(players[0])
+        players = t5.opponents
+        self.assertNotEqual(initial_bracket, t5.get_scoreboard())
+        t5.next_game(players[0])
+        players = t5.opponents
+        t5.next_game(players[0])
+        players = t5.opponents
+        t5.next_game(players[0])
+        players = t5.opponents
+        self.assertEqual(0, len(players))
+
+        player_list = ["Erik", "Johan", "Fredrik", "Ilda"]
+        t4 = tour.Tournament(player_list)
+        initial_bracket = t4.get_scoreboard()
+        players = t4.opponents
+        self.assertEqual(2, len(players))
+        self.assertNotEqual(players[0], players[1])
+        t4.next_game(players[0])
+        players = t4.opponents
+        self.assertNotEqual(initial_bracket, t4.get_scoreboard())
+        t4.next_game(players[0])
+        players = t4.opponents
+        t4.next_game(players[0])
+        players = t4.opponents
+        self.assertEqual(0, len(players))
+
+        player_list = ["Erik", "Johan", "Fredrik"]
+        t3 = tour.Tournament(player_list)
+        initial_bracket = t3.get_scoreboard()
+        players = t3.opponents
+        self.assertEqual(2, len(players))
+        self.assertNotEqual(players[0], players[1])
+        t3.next_game(players[0])
+        players = t3.opponents
+        self.assertNotEqual(initial_bracket, t3.get_scoreboard())
+        t3.next_game(players[0])
+        players = t3.opponents
         self.assertEqual(0, len(players))
 
 def run_client():

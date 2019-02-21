@@ -56,6 +56,9 @@ class Tournament:
         Exception
             If the numbers of players aren't between 3 to 8 players, Exception is raised because the tournament
             isn't built to handle that amount of players.
+        Exception
+            If the player_list input doesn't contains only strings, Exception is raised because player_list should
+            contains the names of the players in the form of strings.
         """
 
         self.tournament_depth = 0
@@ -65,6 +68,8 @@ class Tournament:
 
         if (len(player_list) < 3) | (len(player_list) > 8):
             raise Exception("Error: It has to be between 3 - 8 players!")
+        if not all(isinstance(s, str) for s in player_list):
+            raise Exception("Error: The player names has to be in the form of a string!")
         self.waiting_players = player_list.copy()
         self.start_player_list = player_list.copy()
         player_list_copy = player_list.copy()
