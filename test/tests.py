@@ -1,9 +1,9 @@
 import unittest
 import io
 import sys
-import peer
-import graphics as g
-import tournament as tour
+from .communication_platform import peer
+from communication_platform import graphics as g
+from communication_platform import tournament as tour
 from threading import Thread
 import time
 

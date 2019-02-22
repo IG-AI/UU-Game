@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 
 import sys
-#import time as t
 import random
-import game, peer
-import graphics as g
-import tournament as tour
-
+from communication_platform import game, peer
+from communication_platform import graphics as g
+from communication_platform import tournament as tour
 
 def main():
     """
