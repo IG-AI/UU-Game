@@ -2,7 +2,9 @@
 
 import sys
 import random
-from communication_platform import game, peer
+import time
+import game_ui as game
+from communication_platform import peer
 from communication_platform import graphics as g
 from communication_platform import tournament as tour
 
@@ -95,14 +97,8 @@ def local_vs():
     Post:   A game played between between two players
     """
     players, humans = get_local_names()
-    while True:
-        result = game.local_vs(players, humans)
-        if result != "DRAW":
-            break
-        else:
-            g.make_header("Game draw! Replay game")
+    result = game.local(players, humans)
     g.make_header(result + " has won!")
-
 
 def online_vs():
     """
@@ -178,14 +174,10 @@ def local_tour_play():
         else:
             g.make_header("Up next: " + players[0] + " vs " + players[1])
             humans = [human_dict[players[0]], human_dict[players[1]]]
-            while True:
-                winner = game.local_vs(players, humans)
-                if winner != "DRAW":
-                    break
-                else:
-                    g.make_header("Draw game! Replaying game")
+            winner = game.local(players, humans)
             t.next_game(winner) # Set winner of current game
             g.make_header(winner + " has advanced to the next round!")
+            time.sleep(0.2)
 
     g.make_header(winner + " has won the tournament!")
     sys.exit()
