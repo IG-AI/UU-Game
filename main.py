@@ -114,13 +114,8 @@ def online_vs():
             # Create peer which will act as server
             c = peer.Peer(True)
             c.accept_client()
-            while True:
-                # Name, peer, Human, Server
-                win = game.online_vs(name, c, human, True)
-                if win != "DRAW":
-                    break
-                else:
-                    g.make_header("Game draw! Replay game")
+            remote_name, remote_human = c.receive()
+            win = game.online([name, remote_name], [human, remote_human], c, True)
             if win == name:
                 g.make_header("You've won!")
             else: g.make_header("You've lost!")
@@ -131,14 +126,8 @@ def online_vs():
             # Create peer which will act as client
             c = peer.Peer(False)
             c.connect_to_server()
-            while True:
-                # Name, peer, Human, Server
-                win = game.online_vs(name, c, human, False)
-                if win != "DRAW":
-                    break
-                else:
-                    g.make_header("Game draw! Replay game")
-            # Name, peer, Human = True, Server = False
+            c.send((name, human))
+            win = game.online([], [], c, False)
             if win == name:
                 g.make_header("You've won!")
             else: g.make_header("You've lost!")
@@ -181,7 +170,6 @@ def local_tour_play():
 
     g.make_header(winner + " has won the tournament!")
     sys.exit()
-
 
 def online_tour_play():
     """
@@ -238,7 +226,7 @@ def server_side_tournament():
     data["instruction"] = None          # Instructions in the form of strings
     data["players"] = None              # players to play next game
     data["tour"] = t.get_scoreboard()   # String representing current tournament bracket
-    c.send(data)                        # Send initial tournament bracket
+    #c.send(data)                        # Send initial tournament bracket
     winner = ""
 
     while True:
@@ -265,12 +253,8 @@ def server_side_tournament():
             data["instruction"] = "PLAY"
             c.send(data)
 
-            while True:
-                winner = game.online_vs(players[0], c, human_dict[players[0]], True)
-                if winner != "DRAW":
-                    break
-                else:
-                    g.make_header("Game draw! Replay game")
+            humans = [human_dict[players[0]], human_dict[players[1]]]
+            winner = game.online(players, humans, c, True)
 
             if winner == players[0]: # If local player won
                 winners.append(winner)
@@ -314,17 +298,17 @@ def client_side_tournament():
         elif data["instruction"] == "PLAY":
             players = data["players"]
             g.make_header("Up next: Local " + players[1] + " vs remote " + players[0])
-            while True:
-                winner = game.online_vs(players[1], c, human_dict[players[1]], False)
-                if winner != "DRAW":
-                    break
-                else:
-                    g.make_header("Game draw! Replay game")
+
+            winner = game.online([], [], c, False)
 
             if winner == players[1]: # If local player won
                 g.make_header(winner + " has advanced to the next round!")
             else:                    # If remote player won
                 g.make_header(players[0] + " has advanced to the next round!")
+
+        else:
+            print("Invalid instruction:", data)
+            raise(Exception)
 
         data = c.receive()
 
@@ -427,7 +411,7 @@ def decide_online_tour_players(c, remote):
     remote_choice = c.receive()
     if remote_choice + choice > 8:
         print("Your total is over 8. Try again")
-        decide_online_tour_players(c, remote)
+        return decide_online_tour_players(c, remote)
 
     nr_players = choice
     player_list = [] # Strings of names
@@ -452,9 +436,10 @@ def decide_online_tour_players(c, remote):
     for nr in range(nr_ai):
         # This is to ensure that server/client dont create players with the same name
         if remote:
-            name = names[nr]            
+            name = names[nr]
         else:
-            name = names[nr+4]
+            print(nr, nr+(8-nr_ai))
+            name = names[nr+(8-nr_ai)]
         player_list.append(name)
         human_dict[name] = False
 
