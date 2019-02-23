@@ -25,7 +25,7 @@ def menu_options():
     """
     playing = True
     while playing:
-        g.make_header("Welcome to <game>!")
+        g.make_header("Welcome to UU-Game!")
         print("You have the following options:\n 1[" + g.color("G", "v")\
               + "]s1\n["  + g.color("G", "T") + "]ournament\n[" + g.color("R", "Q") + "]uit ")
         choice = input("Please make your " + g.color("G", "choice: "))
@@ -88,7 +88,6 @@ def menu_options():
             sys.exit()
 
         else: print("Invalid choice, try again")
-
 
 def local_vs():
     """
@@ -258,10 +257,12 @@ def server_side_tournament():
 
             if winner == players[0]: # If local player won
                 winners.append(winner)
+                g.make_header("You've won!")
                 g.make_header(winner + " has advanced to the next round!")
             else:                    # If remote player won
                 winner = players[1] 
                 winners.append(winner)
+                g.make_header("You've lost!")
                 g.make_header(winner + " has advanced to the next round!")
 
         t.next_game(winner)
@@ -302,8 +303,10 @@ def client_side_tournament():
             winner = game.online([], [], c, False)
 
             if winner == players[1]: # If local player won
+                g.make_header("You've won!")
                 g.make_header(winner + " has advanced to the next round!")
             else:                    # If remote player won
+                g.make_header("You've lost!")
                 g.make_header(players[0] + " has advanced to the next round!")
 
         else:
@@ -436,10 +439,10 @@ def decide_online_tour_players(c, remote):
     for nr in range(nr_ai):
         # This is to ensure that server/client dont create players with the same name
         if remote:
-            name = names[nr]
+            name = g.color("R", names[nr])
         else:
             print(nr, nr+(8-nr_ai))
-            name = names[nr+(8-nr_ai)]
+            name = g.color("R", names[nr+(8-nr_ai)])
         player_list.append(name)
         human_dict[name] = False
 
