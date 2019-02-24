@@ -65,7 +65,7 @@ class Play:
             elif not self.game.has_next_play():  # checks if play turns remain
                 return None  # returns no game winner
 
-    def init_players(self, mod, dif=0, p_one="Player One", p_two="Player Two"):
+    def init_players(self, mod, AI1_dif=0, AI2_dif=0, p_one="Player One", p_two="Player Two"):
         """
         Initializes the two players for the game dependent on game mode
         :param mod: the game mode being played; human vs human, AI vs AI, ...
@@ -73,6 +73,8 @@ class Play:
         :param p_one: the name for player one; default: Player One
         :param p_two: the name for player two; default: Player Two
         """
+        dif = max(AI1_dif, AI2_dif) # Used in the case of a single AI player. AI_dif is set to 0
+                                    # For human players
         if mod == 1:  # if human player vs human player
             self.players = [PlayerHuman(self.game, p_one),
                             PlayerHuman(self.game, p_two)]
@@ -87,16 +89,22 @@ class Play:
                 self.players = [PlayerHuman(self.game, p_one),
                                 PlayerHardAI(self.game, p_two)]
         else:  # if AI player vs AI player
-            if dif == 1:  # if easy difficulty AI
-                self.players = [PlayerEasyAI(self.game, p_one),
-                                PlayerEasyAI(self.game, p_two)]
+            if AI1_dif == 1:
+                AI1 = PlayerEasyAI(self.game, p_one)
+            elif AI1_dif == 2:
+                AI1 = PlayerMediumAI(self.game, p_one)
+            elif AI1_dif == 3:
+                AI1 = PlayerHardAI(self.game, p_one)
 
-            elif dif == 2:  # if medium difficulty AI
-                self.players = [PlayerMediumAI(self.game, p_one),
-                                PlayerMediumAI(self.game, p_two)]
-            else:  # if hard difficulty AI
-                self.players = [PlayerHardAI(self.game, p_one),
-                                PlayerHardAI(self.game, p_two)]
+            if AI2_dif == 1:
+                AI2 = PlayerEasyAI(self.game, p_two)
+            elif AI2_dif == 2:
+                AI2 = PlayerMediumAI(self.game, p_two)
+            elif AI2_dif == 3:
+                AI2 = PlayerHardAI(self.game, p_two)
+
+            self.players = [AI1, AI2]
+
         self.current_player = choice(self.players)  # random starting player
 
     def change_player(self):

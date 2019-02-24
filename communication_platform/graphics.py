@@ -33,11 +33,12 @@ def make_header(title):
     color_count = repr(title).count("\\")
 
     #print(repr(title))
+    # Re-color text if tc.ENDTC is present in string
     if color_count > 2:
         last_found = 0
         for i in range(color_count-2):
             last_found = repr(title).find("\\x1b[0m", last_found)
-            if last_found < len(repr(title)) - 20:
+            if last_found < len(repr(title)) - 20: # Dont overwrite last tc.ENDTC
                 title = title[:last_found-3] + tc.PURPLE + title[last_found-3:]
                 #print(last_found)
             last_found += 5

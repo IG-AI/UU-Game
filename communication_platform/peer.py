@@ -3,6 +3,7 @@
 import socket as s
 import time as t
 import pickle
+import random
 
 class Peer:
     """
@@ -41,7 +42,7 @@ class Peer:
         method to close sockets when peer is no longer needed
     """
     HOST = '127.0.0.1'
-    PORT = 65001
+    PORT = 65000
     BUFSIZ = 4096
     CONNECTION = None
     ACCEPT_SOCKET = None

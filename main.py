@@ -138,7 +138,6 @@ def online_vs():
 
         else: print("Invalid choice, try again")
 
-
 def local_tour_play():
     """
     Sig:    None
@@ -321,21 +320,33 @@ def get_local_names():
     Pre:    None
     Post:   List of names, and list of booleans corresponding to whether player is human or NPC
     """
+    names = ["SKYNET", "MAX HEADROOM", "WATSON", "DEEP THOUGHT", "J.A.R.V.I.S.",\
+        "R2D2", "MU-TH-UR 6000", "TÄNKANDE AUGUST"]
     players = []
     humans = []
 
     for i in range(2):
-        name = input("Name player " + str(i+1) + ": ")
         while True:
-            human = input("Is this a human player? [" + g.color("G", "Y") + "/" + g.color("R", "N") + "]")
-            if human == "Y" or human == "y":
+            human = input("Are you a human player? [" + g.color("G", "Y") + "/" + g.color("R", "N") + "]")
+            if human == "y":
                 human = True
                 break
-            if human == "n" or human == "n":
+            if human == "n":
                 human = False
                 break
-        players.append(name)
-        humans.append(human)
+        if human:
+            name = input("Input your name: ")
+            name = g.color("G", name)
+            players.append(name)
+            humans.append(human)
+        else:
+            AI = random.randint(0, 7)
+            name = g.color("R", names[AI])
+            del names[AI]
+            print(names)
+            g.make_header("You've been assigned AI player: " + name)
+            players.append(name)
+            humans.append(human)
 
     return players, humans
 
@@ -345,17 +356,27 @@ def get_online_name():
     Pre:    None
     Post:   Name, and boolean corresponding to whether player is human or NPC
     """
-    name = input("Input your name: ")
+    names = ["SKYNET", "MAX HEADROOM", "WATSON", "DEEP THOUGHT", "J.A.R.V.I.S.",\
+        "R2D2", "MU-TH-UR 6000", "TÄNKANDE AUGUST"]
     while True:
         human = input("Are you a human player? [" + g.color("G", "Y") + "/" + g.color("R", "N") + "]")
-        if human == "Y" or human == "y":
+        if human == "y":
             human = True
             break
-        if human == "n" or human == "n":
+        if human == "n":
             human = False
             break
 
-    return name, human
+    if human:
+        name = input("Input your name: ")
+        name = g.color("G", name)
+        return name, human
+
+    else:
+        AI = random.randint(0, 7)
+        name = g.color("R", names[AI])
+        g.make_header("You've been assigned AI player: " + name)
+        return name, human
 
 def decide_offline_tour_players():
     player_list = [] # Strings of names
@@ -385,9 +406,10 @@ def decide_offline_tour_players():
         human_dict[name] = True
 
     # Name AI players
-    names = ["SKYNET", "MAX HEADROOM", "WATSON", "DEEP THOUGHT", "J.A.R.V.I.S.", "R2D2", "MU-TH-UR 6000", "TÄNKANDE AUGUST"]
+    names = ["SKYNET", "MAX HEADROOM", "WATSON", "DEEP THOUGHT", "J.A.R.V.I.S.",\
+        "R2D2", "MU-TH-UR 6000", "TÄNKANDE AUGUST"]
     for nr in range(nr_ai):
-        name = names[nr]
+        name = g.color("R", names[nr])
         player_list.append(name)
         human_dict[name] = False
 
@@ -435,13 +457,13 @@ def decide_online_tour_players(c, remote):
         human_dict[name] = True
 
     # Name AI players
-    names = ["SKYNET", "MAX HEADROOM", "WATSON", "DEEP THOUGHT", "J.A.R.V.I.S.", "R2D2", "MU-TH-UR 6000", "TÄNKANDE AUGUST"]
+    names = ["SKYNET", "MAX HEADROOM", "WATSON", "DEEP THOUGHT", "J.A.R.V.I.S.",\
+        "R2D2", "MU-TH-UR 6000", "TÄNKANDE AUGUST"]
     for nr in range(nr_ai):
         # This is to ensure that server/client dont create players with the same name
         if remote:
             name = g.color("R", names[nr])
         else:
-            print(nr, nr+(8-nr_ai))
             name = g.color("R", names[nr+(8-nr_ai)])
         player_list.append(name)
         human_dict[name] = False
