@@ -14,6 +14,8 @@ def main():
     Pre:    None
     Post:   A played game or tournament in the case of user choosing so, and termination of program
     """
+    g.make_header("Welcome to UU-Game!")
+    g.make_rules()
     menu_options()
     g.make_header("Thanks for playing!")
 
@@ -25,15 +27,15 @@ def menu_options():
     """
     playing = True
     while playing:
-        g.make_header("Welcome to UU-Game!")
-        print("You have the following options:\n 1[" + g.color("G", "v")\
-              + "]s1\n["  + g.color("G", "T") + "]ournament\n[" + g.color("R", "Q") + "]uit ")
+        g.make_header("You have the following options:")
+        print("1[" + g.color("G", "v")\
+              + "]s1\n ["  + g.color("G", "T") + "]ournament\n [" + g.color("R", "Q") + "]uit ")
         choice = input("Please make your " + g.color("G", "choice: "))
 
         # 1 vs 1 game
         if choice == "V" or choice == "v":
             while True:
-                print("Do you wish to play [" + g.color("G", "L") + "]ocal or [" + g.color("G", "O") + "]nline?\n["\
+                print("[" + g.color("G", "L") + "]ocal\n[" + g.color("G", "O") + "]nline\n["\
                       + g.color("R", "R") + "]eturn to previous options\n[" + g.color("R", "Q") + "]uit ")
                 choice = input("Please make your " + g.color("G", "choice: "))
 
@@ -60,7 +62,7 @@ def menu_options():
         # Tournament game
         elif choice == "T" or choice == "t":
             while True:
-                print("Do you wish to play [" + g.color("G", "L") + "]ocal or [" + g.color("G", "O") + "]nline?\n["\
+                print("[" + g.color("G", "L") + "]ocal\n[" + g.color("G", "O") + "]nline\n["\
                       + g.color("R", "R") + "]eturn to previous options\n[" + g.color("R", "Q") + "]uit ")
                 choice = input("Please make your " + g.color("G", "choice: "))
 
@@ -321,12 +323,13 @@ def get_local_names():
     Pre:    None
     Post:   List of names, and list of booleans corresponding to whether player is human or NPC
     """
-    names = ["SKYNET", "MAX HEADROOM", "WATSON", "DEEP THOUGHT", "J.A.R.V.I.S.",\
-        "R2D2", "MU-TH-UR 6000", "TÄNKANDE AUGUST"]
-    dif_dict = {g.color("R", "SKYNET"): g.color("R", "Hard"), g.color("R", "MAX HEADROOM"): g.color("G", "Easy"),\
-        g.color("R", "WATSON"): g.color("R", "Hard"), g.color("R", "DEEP THOUGHT"): g.color("Y", "Medium"),\
-        g.color("R", "J.A.R.V.I.S."): g.color("G", "Easy"), g.color("R", "R2D2"): g.color("R", "Hard"),\
-        g.color("R", "MU-TH-UR 6000"): g.color("Y", "Medium"), g.color("R", "TÄNKANDE AUGUST"): g.color("G", "Easy"),}
+    names = [g.color("R", "SKYNET"), g.color("G", "MAX HEADROOM"), g.color("R", "WATSON"),\
+        g.color("Y", "DEEP THOUGHT"), g.color("G", "J.A.R.V.I.S."), g.color("R", "R2D2"),\
+        g.color("Y", "MU-TH-UR 6000"), g.color("G", "TÄNKANDE AUGUST"),]
+    dif_dict = {names[0]: g.color("R", "Hard"), names[1]: g.color("G", "Easy"),\
+        names[2]: g.color("R", "Hard"), names[3]: g.color("Y", "Medium"),\
+        names[4]: g.color("G", "Easy"), names[5]: g.color("R", "Hard"),\
+        names[6]: g.color("Y", "Medium"), names[7]: g.color("G", "Easy"),}
     players = []
     humans = []
 
@@ -341,12 +344,12 @@ def get_local_names():
                 break
         if human:
             name = input("Input your name: ")
-            name = g.color("G", name)
+            name = g.color("B", name)
             players.append(name)
             humans.append(human)
         else:
             AI = random.randint(0, 7)
-            name = g.color("R", names[AI])
+            name = names[AI]
             del names[AI]
             g.make_header("You've been assigned AI player: " + name + ". Difficulty: " + dif_dict[name])
             players.append(name)
@@ -360,12 +363,13 @@ def get_online_name():
     Pre:    None
     Post:   Name, and boolean corresponding to whether player is human or NPC
     """
-    names = ["SKYNET", "MAX HEADROOM", "WATSON", "DEEP THOUGHT", "J.A.R.V.I.S.",\
-        "R2D2", "MU-TH-UR 6000", "TÄNKANDE AUGUST"]
-    dif_dict = {g.color("R", "SKYNET"): g.color("R", "Hard"), g.color("R", "MAX HEADROOM"): g.color("G", "Easy"),\
-        g.color("R", "WATSON"): g.color("R", "Hard"), g.color("R", "DEEP THOUGHT"): g.color("Y", "Medium"),\
-        g.color("R", "J.A.R.V.I.S."): g.color("G", "Easy"), g.color("R", "R2D2"): g.color("R", "Hard"),\
-        g.color("R", "MU-TH-UR 6000"): g.color("Y", "Medium"), g.color("R", "TÄNKANDE AUGUST"): g.color("G", "Easy"),}
+    names = [g.color("R", "SKYNET"), g.color("G", "MAX HEADROOM"), g.color("R", "WATSON"),\
+        g.color("Y", "DEEP THOUGHT"), g.color("G", "J.A.R.V.I.S."), g.color("R", "R2D2"),\
+        g.color("Y", "MU-TH-UR 6000"), g.color("G", "TÄNKANDE AUGUST"),]
+    dif_dict = {names[0]: g.color("R", "Hard"), names[1]: g.color("G", "Easy"),\
+        names[2]: g.color("R", "Hard"), names[3]: g.color("Y", "Medium"),\
+        names[4]: g.color("G", "Easy"), names[5]: g.color("R", "Hard"),\
+        names[6]: g.color("Y", "Medium"), names[7]: g.color("G", "Easy"),}
     while True:
         human = input("Are you a human player? [" + g.color("G", "Y") + "/" + g.color("R", "N") + "]")
         if human == "y":
@@ -377,12 +381,12 @@ def get_online_name():
 
     if human:
         name = input("Input your name: ")
-        name = g.color("G", name)
+        name = g.color("B", name)
         return name, human
 
     else:
         AI = random.randint(0, 7)
-        name = g.color("R", names[AI])
+        name = names[AI]
         g.make_header("You've been assigned AI player: " + name + ". Difficulty: " + dif_dict[name])
         return name, human
 
@@ -410,20 +414,21 @@ def decide_offline_tour_players():
     # Name human players
     for player in range(nr_players-nr_ai):
         name = input("Name player" + str(player+1) + ": ")
-        name = g.color("G", name)
+        name = g.color("B", name)
         player_list.append(name)
         human_dict[name] = True
 
     # Name AI players
-    names = ["SKYNET", "MAX HEADROOM", "WATSON", "DEEP THOUGHT", "J.A.R.V.I.S.",\
-        "R2D2", "MU-TH-UR 6000", "TÄNKANDE AUGUST"]
-    dif_dict = {g.color("R", "SKYNET"): g.color("R", "Hard"), g.color("R", "MAX HEADROOM"): g.color("G", "Easy"),\
-        g.color("R", "WATSON"): g.color("R", "Hard"), g.color("R", "DEEP THOUGHT"): g.color("Y", "Medium"),\
-        g.color("R", "J.A.R.V.I.S."): g.color("G", "Easy"), g.color("R", "R2D2"): g.color("R", "Hard"),\
-        g.color("R", "MU-TH-UR 6000"): g.color("Y", "Medium"), g.color("R", "TÄNKANDE AUGUST"): g.color("G", "Easy"),}
-    
+    names = [g.color("R", "SKYNET"), g.color("G", "MAX HEADROOM"), g.color("R", "WATSON"),\
+        g.color("Y", "DEEP THOUGHT"), g.color("G", "J.A.R.V.I.S."), g.color("R", "R2D2"),\
+        g.color("Y", "MU-TH-UR 6000"), g.color("G", "TÄNKANDE AUGUST"),]
+    dif_dict = {names[0]: g.color("R", "Hard"), names[1]: g.color("G", "Easy"),\
+        names[2]: g.color("R", "Hard"), names[3]: g.color("Y", "Medium"),\
+        names[4]: g.color("G", "Easy"), names[5]: g.color("R", "Hard"),\
+        names[6]: g.color("Y", "Medium"), names[7]: g.color("G", "Easy"),}
+
     for nr in range(nr_ai):
-        name = g.color("R", names[nr])
+        name =names[nr]
         player_list.append(name)
         g.make_header("AI player: " + name + " has been assigned. Difficulty: " + dif_dict[name])
         human_dict[name] = False
@@ -469,26 +474,27 @@ def decide_online_tour_players(c, remote):
     # Name human players
     for player in range(nr_players-nr_ai):
         name = input("Name player" + str(player+1) + ": ")
-        name = g.color("G", name)
+        name = g.color("B", name)
         player_list.append(name)
         human_dict[name] = True
 
     # Name AI players
-    names = ["SKYNET", "MAX HEADROOM", "WATSON", "DEEP THOUGHT", "J.A.R.V.I.S.",\
-        "R2D2", "MU-TH-UR 6000", "TÄNKANDE AUGUST"]
-    dif_dict = {g.color("R", "SKYNET"): g.color("R", "Hard"), g.color("R", "MAX HEADROOM"): g.color("G", "Easy"),\
-        g.color("R", "WATSON"): g.color("R", "Hard"), g.color("R", "DEEP THOUGHT"): g.color("Y", "Medium"),\
-        g.color("R", "J.A.R.V.I.S."): g.color("G", "Easy"), g.color("R", "R2D2"): g.color("R", "Hard"),\
-        g.color("R", "MU-TH-UR 6000"): g.color("Y", "Medium"), g.color("R", "TÄNKANDE AUGUST"): g.color("G", "Easy"),}
-    
+    names = [g.color("R", "SKYNET"), g.color("G", "MAX HEADROOM"), g.color("R", "WATSON"),\
+        g.color("Y", "DEEP THOUGHT"), g.color("G", "J.A.R.V.I.S."), g.color("R", "R2D2"),\
+        g.color("Y", "MU-TH-UR 6000"), g.color("G", "TÄNKANDE AUGUST"),]
+    dif_dict = {names[0]: g.color("R", "Hard"), names[1]: g.color("G", "Easy"),\
+        names[2]: g.color("R", "Hard"), names[3]: g.color("Y", "Medium"),\
+        names[4]: g.color("G", "Easy"), names[5]: g.color("R", "Hard"),\
+        names[6]: g.color("Y", "Medium"), names[7]: g.color("G", "Easy"),}
+
     for nr in range(nr_ai):
         # This is to ensure that server/client dont create players with the same name
         if remote:
-            name = g.color("R", names[nr])
+            name = names[nr]
             g.make_header("AI player: " + name + " has been assigned. Difficulty: " + dif_dict[name])
 
         else:
-            name = g.color("R", names[nr+(8-nr_ai)])
+            name = names[nr+(8-nr_ai)]
             g.make_header("AI player: " + name + " has been assigned. Difficulty: " + dif_dict[name])
 
         player_list.append(name)

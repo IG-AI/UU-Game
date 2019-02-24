@@ -6,10 +6,11 @@ from game_engine.player_human import PlayerHuman
 from communication_platform import graphics as g
 
 def local(players, humans):
-    dif_dict = {g.color("R", "SKYNET"): 3, g.color("R", "MAX HEADROOM"): 1,\
-        g.color("R", "WATSON"): 3, g.color("R", "DEEP THOUGHT"): 2,\
-        g.color("R", "J.A.R.V.I.S."): 1, g.color("R", "R2D2"): 3,\
-        g.color("R", "MU-TH-UR 6000"): 2, g.color("R", "TÄNKANDE AUGUST"): 1,}
+    names = [g.color("R", "SKYNET"), g.color("G", "MAX HEADROOM"), g.color("R", "WATSON"),\
+        g.color("Y", "DEEP THOUGHT"), g.color("G", "J.A.R.V.I.S."), g.color("R", "R2D2"),\
+        g.color("Y", "MU-TH-UR 6000"), g.color("G", "TÄNKANDE AUGUST"),]
+    dif_dict = {names[0]: 3, names[1]: 1, names[2]: 3, names[3]: 2,\
+        names[4]: 1, names[5]: 3, names[6]: 2, names[7]: 1,}
 
     AI1_dif, AI2_dif = 0, 0
     if not humans[0]:
@@ -40,14 +41,17 @@ def local(players, humans):
     if winner != "DRAW":
         return winner
     else:
+        g.make_header("Game ended in draw! Replay game")
+        time.sleep(2)
         return local(players, humans)
 
 def online(players, humans, c, server):
     if server:
-        dif_dict = {g.color("R", "SKYNET"): 3, g.color("R", "MAX HEADROOM"): 1,\
-            g.color("R", "WATSON"): 3, g.color("R", "DEEP THOUGHT"): 2,\
-            g.color("R", "J.A.R.V.I.S."): 1, g.color("R", "R2D2"): 3,\
-            g.color("R", "MU-TH-UR 6000"): 2, g.color("R", "TÄNKANDE AUGUST"): 1,}
+        names = [g.color("R", "SKYNET"), g.color("G", "MAX HEADROOM"), g.color("R", "WATSON"),\
+            g.color("Y", "DEEP THOUGHT"), g.color("G", "J.A.R.V.I.S."), g.color("R", "R2D2"),\
+            g.color("Y", "MU-TH-UR 6000"), g.color("G", "TÄNKANDE AUGUST"),]
+        dif_dict = {names[0]: 3, names[1]: 1, names[2]: 3, names[3]: 2,\
+            names[4]: 1, names[5]: 3, names[6]: 2, names[7]: 1,}
 
         AI1_dif, AI2_dif = 0, 0
         if not humans[0]:
@@ -88,6 +92,8 @@ def online(players, humans, c, server):
         if winner != "DRAW":
             return winner
         else:
+            g.make_header("Game ended in draw! Replay game")
+            time.sleep(2)
             return online(players, humans, c, server)
 
     else:
@@ -99,6 +105,8 @@ def online(players, humans, c, server):
         if winner != "DRAW":
             return winner
         else:
+            g.make_header("Game ended in draw! Replay game")
+            time.sleep(2)
             return online(players, humans, c, server)
 
 def run_local_game(driver):
@@ -174,7 +182,6 @@ def check_win(driver):
         return driver.current_player.name
     elif not driver.game.has_next_play():                 # Draw
         display_gameboard(driver)
-        print("Game draw! Replay game")
         return "DRAW"
     else:
         return False
