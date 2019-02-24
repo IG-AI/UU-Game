@@ -207,7 +207,6 @@ def server_side_tournament():
     c = peer.Peer(True)
     c.accept_client()
     player_list, human_dict = decide_online_tour_players(c, False)
-    print("Waiting for remote list of players...")
 
     # Sync player lists
     remote_player_list = c.receive()
@@ -250,6 +249,7 @@ def server_side_tournament():
             data["players"] = players
             data["instruction"] = "PLAY"
             c.send(data)
+            time.sleep(2) # Slow down game in case of all AI players
 
             humans = [human_dict[players[0]], human_dict[players[1]]]
             winner = game.online(players, humans, c, True)
@@ -298,6 +298,7 @@ def client_side_tournament():
         elif data["instruction"] == "PLAY":
             players = data["players"]
             g.make_header("Up next: Local " + players[1] + " vs remote " + players[0])
+            time.sleep(2) # Slow down game in case of all AI players
 
             winner = game.online([], [], c, False)
 
@@ -322,6 +323,10 @@ def get_local_names():
     """
     names = ["SKYNET", "MAX HEADROOM", "WATSON", "DEEP THOUGHT", "J.A.R.V.I.S.",\
         "R2D2", "MU-TH-UR 6000", "TÄNKANDE AUGUST"]
+    dif_dict = {g.color("R", "SKYNET"): g.color("R", "Hard"), g.color("R", "MAX HEADROOM"): g.color("G", "Easy"),\
+        g.color("R", "WATSON"): g.color("R", "Hard"), g.color("R", "DEEP THOUGHT"): g.color("Y", "Medium"),\
+        g.color("R", "J.A.R.V.I.S."): g.color("G", "Easy"), g.color("R", "R2D2"): g.color("R", "Hard"),\
+        g.color("R", "MU-TH-UR 6000"): g.color("Y", "Medium"), g.color("R", "TÄNKANDE AUGUST"): g.color("G", "Easy"),}
     players = []
     humans = []
 
@@ -343,8 +348,7 @@ def get_local_names():
             AI = random.randint(0, 7)
             name = g.color("R", names[AI])
             del names[AI]
-            print(names)
-            g.make_header("You've been assigned AI player: " + name)
+            g.make_header("You've been assigned AI player: " + name + ". Difficulty: " + dif_dict[name])
             players.append(name)
             humans.append(human)
 
@@ -358,6 +362,10 @@ def get_online_name():
     """
     names = ["SKYNET", "MAX HEADROOM", "WATSON", "DEEP THOUGHT", "J.A.R.V.I.S.",\
         "R2D2", "MU-TH-UR 6000", "TÄNKANDE AUGUST"]
+    dif_dict = {g.color("R", "SKYNET"): g.color("R", "Hard"), g.color("R", "MAX HEADROOM"): g.color("G", "Easy"),\
+        g.color("R", "WATSON"): g.color("R", "Hard"), g.color("R", "DEEP THOUGHT"): g.color("Y", "Medium"),\
+        g.color("R", "J.A.R.V.I.S."): g.color("G", "Easy"), g.color("R", "R2D2"): g.color("R", "Hard"),\
+        g.color("R", "MU-TH-UR 6000"): g.color("Y", "Medium"), g.color("R", "TÄNKANDE AUGUST"): g.color("G", "Easy"),}
     while True:
         human = input("Are you a human player? [" + g.color("G", "Y") + "/" + g.color("R", "N") + "]")
         if human == "y":
@@ -375,7 +383,7 @@ def get_online_name():
     else:
         AI = random.randint(0, 7)
         name = g.color("R", names[AI])
-        g.make_header("You've been assigned AI player: " + name)
+        g.make_header("You've been assigned AI player: " + name + ". Difficulty: " + dif_dict[name])
         return name, human
 
 def decide_offline_tour_players():
@@ -402,17 +410,25 @@ def decide_offline_tour_players():
     # Name human players
     for player in range(nr_players-nr_ai):
         name = input("Name player" + str(player+1) + ": ")
+        name = g.color("G", name)
         player_list.append(name)
         human_dict[name] = True
 
     # Name AI players
     names = ["SKYNET", "MAX HEADROOM", "WATSON", "DEEP THOUGHT", "J.A.R.V.I.S.",\
         "R2D2", "MU-TH-UR 6000", "TÄNKANDE AUGUST"]
+    dif_dict = {g.color("R", "SKYNET"): g.color("R", "Hard"), g.color("R", "MAX HEADROOM"): g.color("G", "Easy"),\
+        g.color("R", "WATSON"): g.color("R", "Hard"), g.color("R", "DEEP THOUGHT"): g.color("Y", "Medium"),\
+        g.color("R", "J.A.R.V.I.S."): g.color("G", "Easy"), g.color("R", "R2D2"): g.color("R", "Hard"),\
+        g.color("R", "MU-TH-UR 6000"): g.color("Y", "Medium"), g.color("R", "TÄNKANDE AUGUST"): g.color("G", "Easy"),}
+    
     for nr in range(nr_ai):
         name = g.color("R", names[nr])
         player_list.append(name)
+        g.make_header("AI player: " + name + " has been assigned. Difficulty: " + dif_dict[name])
         human_dict[name] = False
 
+    input("[" + g.color("G", "Enter") + "] to continue")
     return player_list, human_dict
 
 def decide_online_tour_players(c, remote):
@@ -453,23 +469,34 @@ def decide_online_tour_players(c, remote):
     # Name human players
     for player in range(nr_players-nr_ai):
         name = input("Name player" + str(player+1) + ": ")
+        name = g.color("G", name)
         player_list.append(name)
         human_dict[name] = True
 
     # Name AI players
     names = ["SKYNET", "MAX HEADROOM", "WATSON", "DEEP THOUGHT", "J.A.R.V.I.S.",\
         "R2D2", "MU-TH-UR 6000", "TÄNKANDE AUGUST"]
+    dif_dict = {g.color("R", "SKYNET"): g.color("R", "Hard"), g.color("R", "MAX HEADROOM"): g.color("G", "Easy"),\
+        g.color("R", "WATSON"): g.color("R", "Hard"), g.color("R", "DEEP THOUGHT"): g.color("Y", "Medium"),\
+        g.color("R", "J.A.R.V.I.S."): g.color("G", "Easy"), g.color("R", "R2D2"): g.color("R", "Hard"),\
+        g.color("R", "MU-TH-UR 6000"): g.color("Y", "Medium"), g.color("R", "TÄNKANDE AUGUST"): g.color("G", "Easy"),}
+    
     for nr in range(nr_ai):
         # This is to ensure that server/client dont create players with the same name
         if remote:
             name = g.color("R", names[nr])
+            g.make_header("AI player: " + name + " has been assigned. Difficulty: " + dif_dict[name])
+
         else:
             name = g.color("R", names[nr+(8-nr_ai)])
+            g.make_header("AI player: " + name + " has been assigned. Difficulty: " + dif_dict[name])
+
         player_list.append(name)
         human_dict[name] = False
 
+    input("[" + g.color("G", "Enter") + "] to continue")
+    print("Waiting for remote...")
     return player_list, human_dict
-
 
 if __name__ == '__main__':
     main()

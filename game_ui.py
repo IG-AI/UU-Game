@@ -75,11 +75,11 @@ def online(players, humans, c, server):
 
         if driver.current_player.name == players[0]: # If starting player
             c.send(False)
-            time.sleep(0.2)
+            c.receive() # Sync
             winner = run_online_game(driver, c, True)
         else:
             c.send(True)
-            time.sleep(0.2)
+            c.receive() # Sync
             c.send(driver)
             print("Waiting for remote to start game...")
             driver = c.receive()
@@ -93,6 +93,7 @@ def online(players, humans, c, server):
     else:
         print("Waiting for remote to start game...")
         starting = c.receive()
+        c.send("ACK")
         driver = c.receive()
         winner = run_online_game(driver, c, starting)
         if winner != "DRAW":
@@ -126,7 +127,6 @@ def run_online_game(driver, c, starting):
             c.send(win)
             return win
         driver = give_piece(driver)
-        time.sleep(0.2)
         c.send(driver)
         print("Waiting for remote to play...")
         driver = c.receive()
@@ -145,6 +145,7 @@ def give_piece(driver):
         driver.play_selection()
         print("selected piece " + g.color("G", driver.selected_piece))
 
+    time.sleep(0.2) # Slow down gameplay in case of dual AI players
     return driver
 
 def place_piece(driver):

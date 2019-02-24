@@ -51,6 +51,7 @@ def make_header(title):
         header += "-"
     header += "\n|"
     
+    # "".format does not allow variable inside of "", therefore this is needed
     if color_count == 4:
         header += "{:^91}".format(title) + "|\n"
 
@@ -92,6 +93,9 @@ def color(color, text):
 
     elif color == "R":
         return tc.RED + text + tc.ENDTC
+
+    elif color == "Y":
+        return tc.YELLOW + text + tc.ENDTC
 
     elif color == "BP":
         return tc.BGPURPLE + text + tc.ENDTC
