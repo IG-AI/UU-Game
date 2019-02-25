@@ -1,4 +1,5 @@
 import random
+from communication_platform import graphics as g
 
 class Tournament:
     """
@@ -142,20 +143,19 @@ class Tournament:
         Formats a string of the tournament bracket and returns it.
         """
         cases = len(self.start_player_list)
+        anti_pad = 9
 
-        opponent03 = "N/A"
-        opponent04 = "N/A"
-        opponent05 = "N/A"
-        opponent06 = "N/A"
-        opponent07 = "N/A"
-        opponent08 = "N/A"
-        opponent09 = "N/A"
-        opponent10 = "N/A"
-        opponent11 = "N/A"
-        opponent12 = "N/A"
-        opponent13 = "N/A"
-        opponent14 = "N/A"
-        winner = "N/A"
+        opponent03 = g.color("B", "N/A")
+        opponent04 = g.color("B", "N/A")
+        opponent05 = g.color("B", "N/A")
+        opponent06 = g.color("B", "N/A")
+        opponent07 = g.color("B", "N/A")
+        opponent09 = g.color("B", "N/A")
+        opponent10 = g.color("B", "N/A")
+        opponent12 = g.color("B", "N/A")
+        opponent13 = g.color("B", "N/A")
+        opponent14 = g.color("B", "N/A")
+        winner = g.color("B", "N/A")
 
         display = "\n"
 
@@ -169,19 +169,24 @@ class Tournament:
                 if len(self.winner_list) == 2:
                     winner = self.winner_list[1][0]
 
-            first_game = [opponent01, opponent02]
-            max_string = len(max(first_game, key=len))
-            string_size1 = len(opponent01)
+            opp_list = [opponent01, opponent02, opponent03, opponent04]
+            opp_len_list = []
+            for opp in opp_list:
+                opp_len_list.append(len(opp) - anti_pad)
+
+            first_game = opp_len_list[0:2]
+            max_string = max(first_game)
+            string_size1 = opp_len_list[0]
             padding1 = "".ljust((int(max_string-string_size1)), '-')
-            string_size2 = len(max([opponent01, opponent02], key=len))
+            string_size2 = max(opp_len_list[0], opp_len_list[1])
             padding2 = "".ljust(string_size2, ' ')
-            string_size3 = len(opponent02)
+            string_size3 = opp_len_list[1]
             padding3 = "".ljust((int(max_string)-string_size3), '-')
             string_size4 = len(padding2+"|---")
             padding4 = "".ljust(string_size4, ' ')
-            string_size6 = max(len(opponent03), len(opponent04)) - len(opponent03)
+            string_size6 = max(opp_len_list[2], opp_len_list[3]) - opp_len_list[2]
             padding6 = "".ljust(string_size6, '-')
-            string_size7 = max(len(opponent03), len(opponent04)) - len(opponent04)
+            string_size7 = max(opp_len_list[2], opp_len_list[3]) - opp_len_list[3]
             padding7 = "".ljust(string_size7, '-')
             string_size5 = len(padding4+opponent04+padding7) - len(opponent02+padding3) - 1
             padding5 = "".ljust(string_size5, ' ')
@@ -205,29 +210,34 @@ class Tournament:
             if self.winner_state == 1:
                 winner = self.winner_list[1][0]
 
-            first_game = [opponent01, opponent02, opponent03, opponent04]
-            max_string = len(max(first_game, key=len))
-            string_size1 = len(opponent01)
+            opp_list = [opponent01, opponent02, opponent03, opponent04, opponent05, opponent06]
+            opp_len_list = []
+            for opp in opp_list:
+                opp_len_list.append(len(opp) - anti_pad)
+
+            first_game = opp_len_list[0:4]
+            max_string = max(first_game)
+            string_size1 = opp_len_list[0]
             padding1 = "".ljust(int(max_string-string_size1), '-')
             string_size2 = max_string
             padding2 = "".ljust(string_size2, ' ')
-            string_size3 = len(opponent02)
+            string_size3 = opp_len_list[1]
             padding3 = "".ljust(int(max_string-string_size3), '-')
-            string_size5 = len(opponent03)
+            string_size5 = opp_len_list[2]
             padding5 = "".ljust(int(max_string-string_size5), '-')
             string_size6 = max_string
             padding6 = "".ljust(string_size6, ' ')
-            string_size7 = len(opponent04)
+            string_size7 = opp_len_list[3]
             padding7 = "".ljust(int(max_string-string_size7), '-')
-            string_size8 = max(len(opponent05), len(opponent06)) - len(opponent05)
+            string_size8 = max(opp_len_list[4], opp_len_list[5]) - opp_len_list[4]
             padding8 = "".ljust(string_size8, '-')
-            string_size9 = max(len(opponent05), len(opponent06)) - len(opponent06)
+            string_size9 = max(opp_len_list[4], opp_len_list[5]) - opp_len_list[5]
             padding9 = "".ljust(string_size9, '-')
-            string_size4 = max(len(""+padding2+"|---"+opponent05+padding8+"|"), (len(""+padding6+"|---"+opponent06+padding9+"|"))) - 1
+            string_size4 = max(len(""+padding2+opponent05+"|---"+padding8+"|"), (len(""+padding6+opponent06+"|---"+padding9+"|")))-1-anti_pad
             padding4 = "".ljust(string_size4, ' ')
-            string_size10 = len(padding4) - len(""+opponent02+padding3+"|")
+            string_size10 = len(padding4) - (len(""+padding3+"|")+opp_len_list[1])
             padding10 = "".ljust(string_size10, ' ')
-            string_size11 = len(padding4) - len(""+opponent03+padding5+"|")
+            string_size11 = len(padding4) - (len(""+padding5+"|")+opp_len_list[2])
             padding11 = "".ljust(string_size11, ' ')
 
             display += opponent01+padding1+"|"+"\n"
@@ -255,37 +265,37 @@ class Tournament:
                 if len(self.winner_list) == 3:
                     winner = self.winner_list[2][0]
 
-            first_game = [opponent01, opponent02]
+            first_game = opp_len_list[0:2]
             max_string = len(max(first_game, key=len))
-            string_size1 = len(opponent01)
+            string_size1 = opp_len_list[0]
             padding1 = "".ljust(int(max_string-string_size1), '-')
             string_size2 = max_string
             padding2 = "".ljust(string_size2, ' ')
-            string_size3 = len(opponent02)
+            string_size3 = opp_len_list[1]
             padding3 = "".ljust(int(max_string-string_size3), '-')
             string_size4 = max(len(""+opponent01+padding1), len(""+opponent01+padding1)) + 4
             padding4 = "".ljust(string_size4, ' ')
-            string_size5 = max(len(opponent03), len(opponent04), len(opponent05), len(opponent06))
-            padding5 = "".ljust((string_size5 - len(opponent03)), '-')
-            string_size7 = max(len(opponent03), len(opponent04), len(opponent05), len(opponent06))
-            padding7 = "".ljust((string_size7 - len(opponent04)), '-')
+            string_size5 = max(opp_len_list[2], opp_len_list[3], opp_len_list[4], opp_len_list[5])
+            padding5 = "".ljust((string_size5 - opp_len_list[2]), '-')
+            string_size7 = max(opp_len_list[2], opp_len_list[3], opp_len_list[4], opp_len_list[5])
+            padding7 = "".ljust((string_size7 - opp_len_list[3]), '-')
             string_size8 = len(""+padding2+"|---")
             padding8 = "".ljust(string_size8, ' ')
-            string_size6 = max(len(opponent03), len(opponent04), len(opponent05), len(opponent06)) + 3
+            string_size6 = max(opp_len_list[2], opp_len_list[3], opp_len_list[4], opp_len_list[5]) + 3
             padding6 = "".ljust(string_size6, ' ')
-            string_size9 = max(len(opponent03), len(opponent04), len(opponent05), len(opponent06)) - len(opponent05)
+            string_size9 = max(opp_len_list[2], opp_len_list[3], opp_len_list[4], opp_len_list[5]) - opp_len_list[4]
             padding9 = "".ljust(string_size9, '-')
-            string_size10 = max(len(opponent03), len(opponent04), len(opponent05), len(opponent06)) - len(opponent06)
+            string_size10 = max(opp_len_list[2], opp_len_list[3], opp_len_list[4], opp_len_list[5]) - opp_len_list[5]
             padding10 = "".ljust(string_size10, '-')
-            string_size11 = max(len(opponent03), len(opponent04), len(opponent05), len(opponent06)) + len(padding4)
+            string_size11 = max(opp_len_list[2], opp_len_list[3], opp_len_list[4], opp_len_list[5]) + len(padding4)
             padding11 = "".ljust(string_size11, ' ')
-            string_size12 = max(len(opponent07), len(opponent08)) - len(opponent07)
+            string_size12 = max(opp_len_list[6], opp_len_list[7]) - opp_len_list[6]
             padding12 = "".ljust(string_size12, '-')
-            string_size13 = max(len(opponent07), len(opponent08)) - len(opponent08)
+            string_size13 = max(opp_len_list[6], opp_len_list[7]) - opp_len_list[7]
             padding13 = "".ljust(string_size13, '-')
-            string_size14 = max(len(opponent07), len(opponent08)) + 3
+            string_size14 = max(opp_len_list[6], opp_len_list[7]) + 3
             padding14 = "".ljust(string_size14, ' ')
-            string_size15 = max(len(opponent07), len(opponent08)) + 3
+            string_size15 = max(opp_len_list[6], opp_len_list[7]) + 3
             padding15 = "".ljust(string_size15, ' ')
             string_size16 = len(""+padding11+"|---"+opponent08+padding13)
             padding16 = "".ljust(string_size16, ' ')
@@ -323,29 +333,29 @@ class Tournament:
 
             first_game = [opponent01, opponent02, opponent03, opponent04, opponent05, opponent06,]
             max_string = len(max(first_game, key=len))
-            string_size1 = len(opponent01)
+            string_size1 = opp_len_list[0]
             padding1 = "".ljust(int(max_string-string_size1), '-')
-            string_size2 = len(opponent02)
+            string_size2 = opp_len_list[1]
             padding2 = "".ljust(int(max_string-string_size2), '-')
-            string_size3 = len(opponent03)
+            string_size3 = opp_len_list[2]
             padding3 = "".ljust(int(max_string-string_size3), '-')
-            string_size4 = len(opponent04)
+            string_size4 = opp_len_list[3]
             padding4 = "".ljust(int(max_string-string_size4), '-')
-            string_size5 = len(opponent05)
+            string_size5 = opp_len_list[4]
             padding5 = "".ljust(int(max_string-string_size5), '-')
-            string_size6 = len(opponent06)
+            string_size6 = opp_len_list[5]
             padding6 = "".ljust(int(max_string-string_size6), '-')
             string_size7 = max_string
             padding7 = "".ljust(string_size7, ' ')
-            string_size8 = max(len(opponent07), len(opponent08), len(opponent09)) - len(opponent07)
+            string_size8 = max(opp_len_list[6], opp_len_list[7], opp_len_list[8]) - opp_len_list[6]
             padding8 = "".ljust(string_size8, '-')
-            string_size9 = max(len(opponent07), len(opponent08), len(opponent09)) - len(opponent08)
+            string_size9 = max(opp_len_list[6], opp_len_list[7], opp_len_list[8]) - opp_len_list[7]
             padding9 = "".ljust(string_size9, '-')
-            string_size10 = max(len(opponent07), len(opponent08), len(opponent09)) - len(opponent09)
+            string_size10 = max(opp_len_list[6], opp_len_list[7], opp_len_list[8]) - opp_len_list[8]
             padding10 = "".ljust(string_size10, '-')
             string_size12 = len(""+padding7+"|---"+opponent09+padding10)
             padding12 = "".ljust(string_size12, ' ')
-            string_size14 = max(len(opponent07), len(opponent08), len(opponent09)) + 3
+            string_size14 = max(opp_len_list[6], opp_len_list[7], opp_len_list[8]) + 3
             padding14 = "".ljust(string_size14, ' ')
             string_size15 = len(""+padding12+"|---"+opponent10) - len(""+padding7+"|---"+opponent09)
             padding15 = "".ljust(string_size15, '-')
@@ -395,33 +405,33 @@ class Tournament:
             if len(self.winner_list) == 4:
                 winner = self.winner_list[3][0]
 
-            string_size1 = max(len(opponent01), len(opponent02)) - len(opponent01)
+            string_size1 = max(opp_len_list[0], opp_len_list[1]) - opp_len_list[0]
             padding1 = "".ljust(string_size1, '-')
-            string_size2 = max(len(opponent01), len(opponent02)) - len(opponent02)
+            string_size2 = max(opp_len_list[0], opp_len_list[1]) - opp_len_list[1]
             padding2 = "".ljust(string_size2, '-')
             string_size3 = len(opponent01+padding1)
             padding3 = "".ljust(string_size3, ' ')
             string_size4 = len(opponent01+padding1) + 4
             padding4 = "".ljust(string_size4, ' ')
-            string_size5 = max(len(opponent03), len(opponent04), len(opponent05), len(opponent06), len(opponent07), len(opponent08)) - len(opponent03)
+            string_size5 = max(opp_len_list[2], opp_len_list[3], opp_len_list[4], opp_len_list[5], opp_len_list[6], opp_len_list[7]) - opp_len_list[2]
             padding5 = "".ljust(string_size5, '-')
-            string_size6 = max(len(opponent03), len(opponent04), len(opponent05), len(opponent06), len(opponent07), len(opponent08)) - len(opponent04)
+            string_size6 = max(opp_len_list[2], opp_len_list[3], opp_len_list[4], opp_len_list[5], opp_len_list[6], opp_len_list[7]) - opp_len_list[3]
             padding6 = "".ljust(string_size6, '-')
-            string_size7 = max(len(opponent03), len(opponent04), len(opponent05), len(opponent06), len(opponent07), len(opponent08)) - len(opponent05)
+            string_size7 = max(opp_len_list[2], opp_len_list[3], opp_len_list[4], opp_len_list[5], opp_len_list[6], opp_len_list[7]) - opp_len_list[4]
             padding7 = "".ljust(string_size7, '-')
-            string_size8 = max(len(opponent03), len(opponent04), len(opponent05), len(opponent06), len(opponent07), len(opponent08)) - len(opponent06)
+            string_size8 = max(opp_len_list[2], opp_len_list[3], opp_len_list[4], opp_len_list[5], opp_len_list[6], opp_len_list[7]) - opp_len_list[5]
             padding8 = "".ljust(string_size8, '-')
-            string_size9 = max(len(opponent03), len(opponent04), len(opponent05), len(opponent06), len(opponent07), len(opponent08)) - len(opponent07)
+            string_size9 = max(opp_len_list[2], opp_len_list[3], opp_len_list[4], opp_len_list[5], opp_len_list[6], opp_len_list[7]) - opp_len_list[6]
             padding9 = "".ljust(string_size9, '-')
-            string_size10 = max(len(opponent03), len(opponent04), len(opponent05), len(opponent06), len(opponent07), len(opponent08)) - len(opponent08)
+            string_size10 = max(opp_len_list[2], opp_len_list[3], opp_len_list[4], opp_len_list[5], opp_len_list[6], opp_len_list[7]) - opp_len_list[7]
             padding10 = "".ljust(string_size10, '-')
             string_size11 = len(padding4+opponent08+padding10)
             padding11 = "".ljust(string_size11, ' ')
             string_size12 = len(padding4+opponent08+padding10) - len(opponent02+padding2) - 1
             padding12 = "".ljust(string_size12, ' ')
-            string_size13 = max(len(opponent09), len(opponent10)) - len(opponent09)
+            string_size13 = max(opp_len_list[8], opp_len_list[9]) - opp_len_list[8]
             padding13 = "".ljust(string_size13, '-')
-            string_size14 = max(len(opponent09), len(opponent10)) - len(opponent10)
+            string_size14 = max(opp_len_list[8], opp_len_list[9]) - opp_len_list[9]
             padding14 = "".ljust(string_size14, '-')
             string_size15 = len(opponent09+padding13) + 3
             padding15 = "".ljust(string_size15, ' ')
@@ -433,7 +443,7 @@ class Tournament:
             padding18 = "".ljust(string_size18, ' ')
             string_size19 = len(padding4+opponent06+padding8+"|"+padding18)
             padding19 = "".ljust(string_size19, ' ')
-            string_size20 = len(padding18) - len(opponent11) - 3
+            string_size20 = len(padding18) - opp_len_list[10] - 3
             padding20 = "".ljust(string_size20, '-')
 
             display += opponent01+padding1+"|"+"\n"
@@ -481,39 +491,39 @@ class Tournament:
 
             first_game = [opponent01, opponent02, opponent03, opponent04, opponent05, opponent06, opponent07, opponent08]
             max_string = len(max(first_game, key=len))
-            string_size1 = len(opponent01)
+            string_size1 = opp_len_list[0]
             padding1 = "".ljust(int(max_string-string_size1), '-')
-            string_size2 = len(opponent02)
+            string_size2 = opp_len_list[1]
             padding2 = "".ljust(int(max_string-string_size2), '-')
-            string_size3 = len(opponent03)
+            string_size3 = opp_len_list[2]
             padding3 = "".ljust(int(max_string-string_size3), '-')
-            string_size4 = len(opponent04)
+            string_size4 = opp_len_list[3]
             padding4 = "".ljust(int(max_string-string_size4), '-')
-            string_size5 = len(opponent05)
+            string_size5 = opp_len_list[4]
             padding5 = "".ljust(int(max_string-string_size5), '-')
-            string_size6 = len(opponent06)
+            string_size6 = opp_len_list[5]
             padding6 = "".ljust(int(max_string-string_size6), '-')
-            string_size7 = len(opponent07)
+            string_size7 = opp_len_list[6]
             padding7 = "".ljust(int(max_string-string_size7), '-')
-            string_size8 = len(opponent08)
+            string_size8 = opp_len_list[7]
             padding8 = "".ljust(int(max_string-string_size8), '-')
             string_size9 = len(opponent01+padding1)
             padding9 = "".ljust(string_size9, ' ')
-            string_size10 = max(len(opponent09), len(opponent10), len(opponent11), len(opponent12)) - len(opponent09)
+            string_size10 = max(opp_len_list[8], opp_len_list[9], opp_len_list[10], opp_len_list[11]) - opp_len_list[8]
             padding10 = "".ljust(string_size10, '-')
-            string_size11 = max(len(opponent09), len(opponent10), len(opponent11), len(opponent12)) - len(opponent10)
+            string_size11 = max(opp_len_list[8], opp_len_list[9], opp_len_list[10], opp_len_list[11]) - opp_len_list[9]
             padding11 = "".ljust(string_size11, '-')
-            string_size12 = max(len(opponent09), len(opponent10), len(opponent11), len(opponent12)) - len(opponent11)
+            string_size12 = max(opp_len_list[8], opp_len_list[9], opp_len_list[10], opp_len_list[11]) - opp_len_list[10]
             padding12 = "".ljust(string_size12, '-')
-            string_size13 = max(len(opponent09), len(opponent10), len(opponent11), len(opponent12)) - len(opponent12)
+            string_size13 = max(opp_len_list[8], opp_len_list[9], opp_len_list[10], opp_len_list[11]) - opp_len_list[11]
             padding13 = "".ljust(string_size13, '-')
             string_size14 = len(padding9+"|---"+opponent09+padding10) - len(opponent02+padding2) - 1
             padding14 = "".ljust(string_size14, ' ')
             string_size15 = len(padding9+"|---"+opponent09+padding10)
             padding15 = "".ljust(string_size15, ' ')
-            string_size16 = max(len(opponent13), len(opponent14)) - len(opponent13)
+            string_size16 = max(opp_len_list[12], opp_len_list[13]) - opp_len_list[12]
             padding16 = "".ljust(string_size16, '-')
-            string_size17 = max(len(opponent13), len(opponent14)) - len(opponent14)
+            string_size17 = max(opp_len_list[12], opp_len_list[13]) - opp_len_list[13]
             padding17 = "".ljust(string_size17, '-')
             string_size18 = len(opponent14+padding17) + 3
             padding18 = "".ljust(string_size18, ' ')
