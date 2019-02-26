@@ -1,7 +1,7 @@
 import unittest
 import io
 import sys
-from .communication_platform import peer
+from communication_platform import peer
 from communication_platform import graphics as g
 from communication_platform import tournament as tour
 from threading import Thread
