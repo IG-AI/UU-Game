@@ -1,10 +1,10 @@
-from unittest import TestCase
+import unittest
 from game_engine.game import Game
 from game_engine.player_ai import PlayerAI
 from random import choice
 
 
-class TestPlayerAIClass(TestCase):
+class TestPlayerAIClass(unittest.TestCase):
     """
     Tests the PlayerAI class
     Author(s): Adam Ross
@@ -266,3 +266,6 @@ class TestPlayerAIClass(TestCase):
                 else [choice([((y, x), 0, 0) for x in range(test.game.N) for y
                 in range(test.game.N) if test.game.is_cell_empty(y, x)])], 0, '1111')
                 [2])
+
+if __name__ == "__main__":
+    unittest.main()

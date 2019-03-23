@@ -1,8 +1,8 @@
-from unittest import TestCase
+import unittest
 from game_engine.game import Game
 
 
-class TestGameClass(TestCase):
+class TestGameClass(unittest.TestCase):
     """
     Tests the Game class, its init variables and has_next_play() method
     Author: Adam Ross
@@ -62,3 +62,6 @@ class TestGameClass(TestCase):
         self.assertTrue(test.has_next_play())
         test.pieces = {}
         self.assertFalse(test.has_next_play())
+
+if __name__ == "__main__":
+    unittest.main()

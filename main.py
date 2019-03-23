@@ -156,6 +156,7 @@ def local_tour_play():
     while True:
         g.make_header("Tournament Standings")
         print(t.get_scoreboard())
+        time.sleep(2)
         end = t.winner_state
         players = t.opponents
         if end == 1: # Last game already played

@@ -19,6 +19,8 @@ def local(players, humans):
     if not humans[1]:
         AI2_dif = dif_dict[players[1]]
 
+    AI1_dif, AI2_dif = 1, 1
+
     driver = Play()
 
     if not humans[0] and not humans[1]:

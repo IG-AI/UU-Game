@@ -1,8 +1,8 @@
-from unittest import TestCase
+import unittest
 from game_engine.game import Game
 
 
-class TestBinaryCharacteristicCount(TestCase):
+class TestBinaryCharacteristicCount(unittest.TestCase):
     """
     Tests the bin_count() method in the Game class
     Author: Adam Ross
@@ -152,3 +152,6 @@ class TestBinaryCharacteristicCount(TestCase):
                       ['1001', None, '1111', '1011'],
                       ['0100', '0110', '0011', '1110']]
         self.assertEqual([1, 0, 0, 1], test.bin_count('0110', 0, 0, 1, 1, 1))
+
+if __name__ == "__main__":
+    unittest.main()

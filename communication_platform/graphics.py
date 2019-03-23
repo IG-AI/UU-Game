@@ -9,6 +9,7 @@ class tc:
     GREEN = '\033[92m'
     YELLOW = '\033[93m'
     RED = '\033[31m'
+    ORANGE = '\033[33m'
     BGPURPLE= '\033[45m'
     ENDTC = '\033[0m'
     BOLD = '\033[1m'
@@ -32,7 +33,6 @@ def make_header(title):
     title = color("P", title)
     color_count = repr(title).count("\\")
 
-    #print(repr(title))
     # Re-color text if tc.ENDTC is present in string
     if color_count > 2:
         last_found = 0
@@ -40,12 +40,9 @@ def make_header(title):
             last_found = repr(title).find("\\x1b[0m", last_found)
             if last_found < len(repr(title)) - 20: # Dont overwrite last tc.ENDTC
                 title = title[:last_found-3] + tc.PURPLE + title[last_found-3:]
-                #print(last_found)
             last_found += 5
-    #print(repr(title))
     
     color_count = repr(title).count("\\")
-    #print(color_count)
 
     for i in range(width):
         header += "-"
@@ -175,6 +172,9 @@ def color(color, text):
 
     elif color == "B":
         return tc.BLUE + text + tc.ENDTC
+
+    elif color == "O":
+        return tc.ORANGE + text + tc.ENDTC
 
     elif color == "BP":
         return tc.BGPURPLE + text + tc.ENDTC

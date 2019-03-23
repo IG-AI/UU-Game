@@ -1,4 +1,4 @@
-from unittest import TestCase
+import unittest
 from game_engine.play import Play
 from game_engine.player_human import PlayerHuman
 from game_engine.player_ai_medium import PlayerMediumAI
@@ -6,7 +6,7 @@ from game_engine.player_ai_easy import PlayerEasyAI
 from game_engine.player_ai_hard import PlayerHardAI
 
 
-class TestInitPlayers(TestCase):
+class TestInitPlayers(unittest.TestCase):
     """
     Tests the init_players() method in the Play class
     Author(s): Adam Ross; Gustav From; Laurin Kerle
@@ -154,3 +154,6 @@ class TestInitPlayers(TestCase):
             test.change_player()
         self.assertEqual(len(test.players), 2)
         self.assertEqual(count, 2)
+
+if __name__ == "__main__":
+    unittest.main()

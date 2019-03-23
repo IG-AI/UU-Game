@@ -1,8 +1,8 @@
-from unittest import TestCase
+import unittest
 from game_engine.game import Game
 
 
-class TestWinCondition(TestCase):
+class TestWinCondition(unittest.TestCase):
     """
     Tests the win_condition() method in the Game class
     Author: Adam Ross
@@ -250,3 +250,6 @@ class TestWinCondition(TestCase):
                       [None, '1000', None, None],
                       ['1111', None, None, None]]
         self.assertFalse(test.has_won_game('1010'))
+
+if __name__ == "__main__":
+    unittest.main()

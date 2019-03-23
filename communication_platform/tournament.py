@@ -145,19 +145,19 @@ class Tournament:
         cases = len(self.start_player_list)
         anti_pad = 9
 
-        opponent03 = g.color("B", "N/A")
-        opponent04 = g.color("B", "N/A")
-        opponent05 = g.color("B", "N/A")
-        opponent06 = g.color("B", "N/A")
-        opponent07 = g.color("B", "N/A")
-        opponent08 = g.color("B", "N/A")
-        opponent09 = g.color("B", "N/A")
-        opponent10 = g.color("B", "N/A")
-        opponent11 = g.color("B", "N/A")
-        opponent12 = g.color("B", "N/A")
-        opponent13 = g.color("B", "N/A")
-        opponent14 = g.color("B", "N/A")
-        winner = g.color("B", "N/A")
+        opponent03 = g.color("O", "N/A")
+        opponent04 = g.color("O", "N/A")
+        opponent05 = g.color("O", "N/A")
+        opponent06 = g.color("O", "N/A")
+        opponent07 = g.color("O", "N/A")
+        opponent08 = g.color("O", "N/A")
+        opponent09 = g.color("O", "N/A")
+        opponent10 = g.color("O", "N/A")
+        opponent11 = g.color("O", "N/A")
+        opponent12 = g.color("O", "N/A")
+        opponent13 = g.color("O", "N/A")
+        opponent14 = g.color("O", "N/A")
+        winner = g.color("O", "N/A")
 
         display = "\n"
 
@@ -329,7 +329,6 @@ class Tournament:
                 if len(self.winner_list_temp) >= 2:
                     opponent08 = self.winner_list_temp[1]
             if len(self.winner_list) >= 1:
-                print(self.winner_list)
                 opponent07 = self.winner_list[0][0]
                 opponent08 = self.winner_list[0][1]
                 opponent09 = self.winner_list[0][2]

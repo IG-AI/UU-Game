@@ -31,30 +31,6 @@ class TestPeer(unittest.TestCase):
         self.assertEqual(data, data_orig)
         s.teardown()
 
-    def test_graphics(self):
-        expected_length = 161
-        terminal_text = io.StringIO()
-        sys.stdout = terminal_text
-
-        g.make_header("test")
-        self.assertNotEqual("test", terminal_text.getvalue())
-        self.assertGreaterEqual(len(terminal_text.getvalue()), expected_length-1)
-        self.assertLessEqual(len(terminal_text.getvalue()), expected_length+1)
-        terminal_text.truncate(0)
-        terminal_text.seek(0)
-
-        g.make_header("")
-        self.assertGreaterEqual(len(terminal_text.getvalue()), expected_length-1)
-        self.assertLessEqual(len(terminal_text.getvalue()), expected_length+1)
-        terminal_text.truncate(0)
-        terminal_text.seek(0)
-
-        g.make_header("testtesttesttesttest")
-        self.assertGreaterEqual(len(terminal_text.getvalue()), expected_length-1)
-        self.assertLessEqual(len(terminal_text.getvalue()), expected_length+1)
-
-        sys.stdout = sys.__stdout__
-
     def test_tournament(self):
         player_list = ["Erik", "Johan", "Fredrik", "Ilda", "Emma", "Sandra", "Davide", "Viktor", "Sam"]
         with self.assertRaises(Exception):
